@@ -259,9 +259,9 @@ tailwind.config = {
     <section class="section-replies flex-1 px-6 md:px-12 py-10">
       <div class="max-w-3xl">
         <!-- Notice -->
-        <div class="bg-secondary-fixed/40 rounded-2xl px-5 py-4 mb-8 flex gap-3 items-start ghost-border">
-          <span class="material-symbols-outlined text-secondary text-xl mt-0.5">info</span>
-          <p class="text-on-secondary-container text-sm font-body leading-relaxed">目前為本地編輯模式，變更即時反映於「回覆範本」頁面，重新整理後會重置。串接 Google Sheets 後變更將永久儲存。</p>
+        <div class="bg-primary-fixed/40 rounded-2xl px-5 py-4 mb-8 flex gap-3 items-start ghost-border">
+          <span class="material-symbols-outlined text-primary text-xl mt-0.5">cloud_done</span>
+          <p class="text-on-primary-fixed text-sm font-body leading-relaxed">已串接 Google Sheets，所有新增、編輯、刪除操作將即時同步並永久儲存。</p>
         </div>
         <!-- Toolbar -->
         <div class="flex gap-3 items-center mb-6 flex-wrap">
@@ -342,20 +342,31 @@ tailwind.config = {
 // ══════════════════════════════════════
 let CATEGORIES = [];
 
+const SHEETS_API = 'https://script.google.com/macros/s/AKfycbwzfJECt4mCgIlMxLLGVUCSectRW4SBPOf9yXZA42vy6OND7_TSZfmsaKo3brab70yq/exec';
+
 async function loadData() {
+  showLoading();
   try {
-    const res = await fetch('./data/replies.json');
+    const res = await fetch(SHEETS_API);
     CATEGORIES = await res.json();
   } catch(e) {
     document.getElementById('app').innerHTML = `
       <div class="text-center py-16">
-        <span class="material-symbols-outlined text-5xl text-on-surface-variant/30 mb-4 block">warning</span>
+        <span class="material-symbols-outlined text-5xl text-on-surface-variant/30 mb-4 block">wifi_off</span>
         <h3 class="font-headline font-bold text-primary text-lg mb-2">無法載入資料</h3>
-        <p class="text-on-surface-variant text-sm font-body">請使用本機伺服器：<code class="bg-surface-container px-2 py-0.5 rounded">python3 -m http.server 8080</code></p>
+        <p class="text-on-surface-variant text-sm font-body">請確認網路連線，或稍後再試</p>
       </div>`;
     return;
   }
   renderHome();
+}
+
+function showLoading() {
+  document.getElementById('app').innerHTML = `
+    <div class="text-center py-16">
+      <div class="inline-block w-8 h-8 border-4 border-primary-fixed border-t-primary rounded-full animate-spin mb-4"></div>
+      <p class="text-on-surface-variant text-sm font-body">載入回覆範本中…</p>
+    </div>`;
 }
 
 // ══════════════════════════════════════
@@ -678,7 +689,8 @@ function dragDrop(e,catId,idx){
   if(dragSrcCat!==catId||dragSrcIdx===idx){ dragEnd(); return; }
   const cat=CATEGORIES.find(c=>c.id===catId);
   const [m]=cat.replies.splice(dragSrcIdx,1); cat.replies.splice(idx,0,m);
-  renderAdminList(); showToast('順序已更新');
+  renderAdminList();
+  syncReorder(catId);
 }
 function dragEnd(){ document.querySelectorAll('.admin-item').forEach(el=>{ el.classList.remove('opacity-40','ring-2','ring-secondary-container'); }); }
 
@@ -705,27 +717,39 @@ function closeModal(){ hideModal('replyModal'); }
 function showModal(id){ const el=document.getElementById(id); el.classList.remove('hidden'); el.classList.add('flex'); }
 function hideModal(id){ const el=document.getElementById(id); el.classList.add('hidden'); el.classList.remove('flex'); }
 
-function saveReply(){
+async function saveReply(){
   const catId=document.getElementById('modalCat').value;
   const title=document.getElementById('modalTitleInput').value.trim();
   const body=document.getElementById('modalBody').value.trim();
   if(!title){ showToast('請填寫情境標題',true); return; }
   if(!body){ showToast('請填寫回覆內文',true); return; }
+
   const cat=CATEGORIES.find(c=>c.id===catId);
+  let replyObj;
+
   if(editIdx!==null&&editCatId!==null){
     const old=CATEGORIES.find(c=>c.id===editCatId);
     const [r]=old.replies.splice(editIdx,1);
-    cat.replies.push({id:r.id,title,body});
-    showToast('回覆已更新');
+    replyObj={id:r.id,title,body};
+    cat.replies.push(replyObj);
   } else {
-    cat.replies.push({id:`reply-${catId.replace('cat-','')}-${Date.now().toString().slice(-4)}`,title,body});
-    showToast('回覆已新增');
+    replyObj={id:`reply-${catId.replace('cat-','')}-${Date.now().toString().slice(-4)}`,title,body};
+    cat.replies.push(replyObj);
   }
+
   closeModal();
   if(currentCatId===catId) renderCategory(catId);
   buildCatOptions(document.getElementById('adminCatSelect'),catId);
   document.getElementById('adminCatSelect').value=catId;
   renderAdminList();
+  showToast('儲存中…');
+
+  try {
+    await fetch(SHEETS_API, {
+      method:'POST', body: JSON.stringify({action:'upsert', category_id:catId, reply:replyObj})
+    });
+    showToast(editIdx!==null?'✅ 回覆已更新並儲存':'✅ 回覆已新增並儲存');
+  } catch(e){ showToast('⚠️ 本地已更新，但 Sheets 同步失敗',true); }
 }
 
 // Delete
@@ -735,12 +759,30 @@ function confirmDelete(catId,idx){
   const cat=CATEGORIES.find(c=>c.id===catId);
   document.getElementById('confirmDesc').textContent=`確定要刪除「${cat.replies[idx].title}」嗎？此操作無法復原。`;
   showModal('confirmOverlay');
-  document.getElementById('confirmOkBtn').onclick=()=>{
-    CATEGORIES.find(c=>c.id===pendingDelCat).replies.splice(pendingDelIdx,1);
-    hideModal('confirmOverlay'); renderAdminList(); showToast('回覆已刪除');
+  document.getElementById('confirmOkBtn').onclick = async ()=>{
+    const cat=CATEGORIES.find(c=>c.id===pendingDelCat);
+    const [deleted]=cat.replies.splice(pendingDelIdx,1);
+    hideModal('confirmOverlay'); renderAdminList(); showToast('刪除中…');
+    try {
+      await fetch(SHEETS_API, {
+        method:'POST', body: JSON.stringify({action:'delete', category_id:pendingDelCat, reply:{id:deleted.id}})
+      });
+      showToast('🗑️ 回覆已刪除並同步');
+    } catch(e){ showToast('⚠️ 本地已刪除，但 Sheets 同步失敗',true); }
   };
 }
 function closeConfirm(){ hideModal('confirmOverlay'); }
+
+// Reorder sync (called after drag drop)
+async function syncReorder(catId){
+  const cat=CATEGORIES.find(c=>c.id===catId);
+  try {
+    await fetch(SHEETS_API, {
+      method:'POST', body: JSON.stringify({action:'reorder', category_id:catId, replies:cat.replies})
+    });
+    showToast('✅ 順序已同步');
+  } catch(e){ showToast('⚠️ 本地已更新，但 Sheets 同步失敗',true); }
+}
 
 // Toast
 let toastTimer;
