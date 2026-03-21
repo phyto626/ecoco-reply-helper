@@ -141,15 +141,13 @@ tailwind.config = {
 <aside class="hidden md:flex h-screen w-60 fixed left-0 top-0 z-40 bg-primary flex-col pt-20 pb-8">
   <!-- Brand -->
   <div class="px-5 mb-8">
-    <div class="flex items-center gap-3">
-      <div class="w-10 h-10 bg-secondary-container rounded-xl flex items-center justify-center">
+    <div class="w-10 h-10 bg-secondary-container rounded-xl flex items-center justify-center">
         <span class="material-symbols-outlined text-on-secondary-container font-bold" style="font-size:20px">eco</span>
       </div>
       <div>
         <h3 class="text-surface-bright font-black text-[13px] font-headline leading-tight">回覆平台</h3>
         <p class="text-on-primary-container/50 text-[9px] uppercase tracking-widest font-label">Social CS Tool</p>
       </div>
-    </div>
   </div>
 
   <!-- Nav -->
@@ -189,7 +187,7 @@ tailwind.config = {
         <!-- Asymmetric headline -->
         <p class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant/60 font-label mb-3">社群客服工具</p>
         <h1 class="text-5xl md:text-6xl font-extrabold text-primary leading-tight tracking-tighter font-headline mb-8">
-          找到正確回覆，<br class="hidden md:block">一鍵複製貼上。
+          快速回覆用戶。
         </h1>
 
         <!-- Search -->
@@ -239,7 +237,7 @@ tailwind.config = {
     </section>
     <section class="section-replies flex-1 px-6 md:px-12 py-10">
       <div class="max-w-5xl bg-surface-container-lowest rounded-3xl overflow-hidden tonal-shadow-md ghost-border">
-        <iframe
+        <iframe id="lookerFrame"
           src="https://lookerstudio.google.com/embed/reporting/634f8f09-ecf7-4699-82c7-7c77a9ad78ea/page/p_myealqpprd"
           allowfullscreen
           sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
@@ -263,6 +261,23 @@ tailwind.config = {
           <span class="material-symbols-outlined text-primary text-xl mt-0.5">cloud_done</span>
           <p class="text-on-primary-fixed text-sm font-body leading-relaxed">已串接 Google Sheets，所有新增、編輯、刪除操作將即時同步並永久儲存。</p>
         </div>
+
+        <!-- Looker Studio 設定 -->
+        <div class="bg-surface-container-lowest rounded-2xl p-6 ghost-border tonal-shadow-sm mb-8">
+          <h3 class="text-sm font-bold font-headline text-primary mb-1 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">bar_chart</span>機台狀態報表網址
+          </h3>
+          <p class="text-on-surface-variant text-xs font-body mb-4">修改後點「儲存」，機台狀態分頁會立即套用新報表。</p>
+          <div class="flex gap-3 items-center">
+            <input id="lookerUrlInput" type="text"
+              class="flex-1 h-11 bg-surface-container-high rounded-xl px-4 text-sm font-body border-none outline-none focus:ring-2 focus:ring-secondary-container/50"
+              placeholder="https://lookerstudio.google.com/embed/reporting/...">
+            <button onclick="saveLookerUrl()" class="cta-gradient text-white px-5 py-2.5 rounded-xl text-sm font-bold font-label flex items-center gap-2 hover:opacity-90 tonal-shadow-sm whitespace-nowrap">
+              <span class="material-symbols-outlined text-[16px]">save</span>儲存
+            </button>
+          </div>
+        </div>
+
         <!-- Toolbar -->
         <div class="flex gap-3 items-center mb-6 flex-wrap">
           <select id="adminCatSelect" onchange="renderAdminList()" class="flex-1 min-w-[200px] h-11 bg-surface-container-lowest rounded-xl px-4 text-sm font-body text-on-surface border-none tonal-shadow-sm outline-none focus:ring-2 focus:ring-secondary-container/50 cursor-pointer"></select>
@@ -422,7 +437,11 @@ function switchTab(tabId) {
     b.classList.toggle('text-primary', active);
     b.classList.toggle('text-on-surface-variant/50', !active);
   });
-  if(tabId === 'admin') renderAdminList();
+  if(tabId === 'admin') {
+    renderAdminList();
+    const input = document.getElementById('lookerUrlInput');
+    if(input) input.value = localStorage.getItem('lookerUrl') || DEFAULT_LOOKER_URL;
+  }
 }
 
 // ══════════════════════════════════════
@@ -820,9 +839,34 @@ function showToast(msg, isError=false){
 });
 
 // ══════════════════════════════════════
+// LOOKER STUDIO URL 管理
+// ══════════════════════════════════════
+const DEFAULT_LOOKER_URL = 'https://lookerstudio.google.com/embed/reporting/634f8f09-ecf7-4699-82c7-7c77a9ad78ea/page/p_myealqpprd';
+
+function initLookerUrl() {
+  const saved = localStorage.getItem('lookerUrl') || DEFAULT_LOOKER_URL;
+  document.getElementById('lookerFrame').src = saved;
+  const input = document.getElementById('lookerUrlInput');
+  if (input) input.value = saved;
+}
+
+function saveLookerUrl() {
+  const input = document.getElementById('lookerUrlInput');
+  const url = input.value.trim();
+  if (!url) { showToast('請填寫報表網址', true); return; }
+  if (!url.includes('lookerstudio.google.com') && !url.includes('datastudio.google.com')) {
+    showToast('請輸入有效的 Looker Studio 網址', true); return;
+  }
+  localStorage.setItem('lookerUrl', url);
+  document.getElementById('lookerFrame').src = url;
+  showToast('✅ 報表網址已更新');
+}
+
+// ══════════════════════════════════════
 // INIT
 // ══════════════════════════════════════
 loadData();
+initLookerUrl();
 </script>
 </body>
 </html>
