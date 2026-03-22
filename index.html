@@ -128,6 +128,9 @@ tailwind.config = {
       <button onclick="switchTab('status')" data-tab="status" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold font-label tracking-tight text-on-surface-variant hover:bg-surface-container-low border-b-2 border-transparent">
         📊 機台狀態
       </button>
+      <button onclick="switchTab('ai')" data-tab="ai" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold font-label tracking-tight text-on-surface-variant hover:bg-surface-container-low border-b-2 border-transparent">
+        🤖 AI 助手
+      </button>
     </div>
   </div>
   <div class="flex items-center gap-2">
@@ -159,6 +162,10 @@ tailwind.config = {
     <button onclick="switchTab('status')" data-side="status" class="side-btn w-full flex items-center gap-3 text-on-primary-container/60 hover:text-surface-bright hover:bg-primary-container/50 rounded-r-full px-4 py-3 text-left">
       <span class="material-symbols-outlined text-[20px]">bar_chart</span>
       <span class="uppercase tracking-widest text-[11px] font-label">機台狀態</span>
+    </button>
+    <button onclick="switchTab('ai')" data-side="ai" class="side-btn w-full flex items-center gap-3 text-on-primary-container/60 hover:text-surface-bright hover:bg-primary-container/50 rounded-r-full px-4 py-3 text-left">
+      <span class="material-symbols-outlined text-[20px]">smart_toy</span>
+      <span class="uppercase tracking-widest text-[11px] font-label">AI 助手</span>
     </button>
   </nav>
 
@@ -290,6 +297,74 @@ tailwind.config = {
     </section>
   </div>
 
+
+  <!-- ── TAB: AI 助手 ── -->
+  <div id="tab-ai" class="tab-panel hidden flex-1 flex flex-col">
+    <section class="relative px-6 md:px-12 pt-14 pb-8 section-white overflow-hidden">
+      <div class="absolute -top-8 -right-8 w-56 h-56 bg-secondary-container rounded-full mix-blend-multiply filter blur-3xl opacity-15 pointer-events-none"></div>
+      <p class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant/60 font-label mb-3">智慧分類</p>
+      <h1 class="text-4xl md:text-5xl font-extrabold text-primary leading-tight tracking-tighter font-headline">AI 留言分類助手</h1>
+      <p class="text-on-surface-variant mt-3 font-body text-sm">貼上用戶留言，AI 自動判斷類別並推薦最適合的回覆範本</p>
+    </section>
+    <section class="section-replies flex-1 px-6 md:px-12 py-10">
+      <div class="max-w-3xl">
+
+        <!-- 輸入區 -->
+        <div class="bg-surface-container-lowest rounded-2xl p-6 ghost-border tonal-shadow-sm mb-6">
+          <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant/70 font-label mb-3">貼上用戶留言</label>
+          <textarea id="aiInput" rows="4"
+            placeholder="例：你們的機台已經滿了好幾天了，什麼時候才會來清啊？"
+            class="w-full bg-surface-container-high rounded-xl px-4 py-3 text-sm font-body border-none outline-none focus:ring-2 focus:ring-secondary-container/50 placeholder:text-on-surface-variant/30 resize-none leading-relaxed"></textarea>
+          <div class="flex justify-end mt-4">
+            <button onclick="classifyMessage()" id="aiBtn"
+              class="cta-gradient text-white px-6 py-2.5 rounded-xl text-sm font-bold font-label uppercase tracking-wider flex items-center gap-2 hover:opacity-90 tonal-shadow-md">
+              <span class="material-symbols-outlined text-[16px]">auto_awesome</span>自動分類
+            </button>
+          </div>
+        </div>
+
+        <!-- 結果區 -->
+        <div id="aiResult" class="hidden">
+          <!-- 分類結果標頭 -->
+          <div id="aiCatHeader" class="cta-gradient rounded-2xl p-5 mb-5 flex items-center gap-4 tonal-shadow-md">
+            <div id="aiCatEmoji" class="w-12 h-12 bg-white/15 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 backdrop-blur-sm"></div>
+            <div class="flex-1">
+              <p class="text-white/60 text-[10px] font-bold uppercase tracking-widest font-label mb-0.5">判斷類別</p>
+              <h3 id="aiCatName" class="text-white font-bold text-lg font-headline"></h3>
+              <p id="aiReason" class="text-white/70 text-xs font-body mt-0.5"></p>
+            </div>
+            <div id="aiConfidence" class="flex-shrink-0 bg-white/20 text-white text-[10px] font-bold px-3 py-1.5 rounded-full font-label uppercase tracking-wider"></div>
+          </div>
+
+          <!-- 推薦回覆 / AI 生成 -->
+          <div class="flex items-center gap-3 mb-4">
+            <div class="h-0.5 w-6 bg-secondary-container"></div>
+            <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant/60 font-label" id="aiRepliesLabel">推薦回覆範本</p>
+          </div>
+          <div id="aiReplies" class="space-y-3"></div>
+
+          <!-- 查看全部 -->
+          <button id="aiViewAll" onclick="viewAllFromAI()"
+            class="mt-5 w-full bg-surface-container-lowest ghost-border rounded-2xl py-3 text-sm font-semibold font-label text-primary hover:bg-surface-container flex items-center justify-center gap-2 tonal-shadow-sm">
+            <span class="material-symbols-outlined text-[16px]">grid_view</span>查看此類別所有回覆
+          </button>
+        </div>
+
+        <!-- Loading -->
+        <div id="aiLoading" class="hidden text-center py-16">
+          <div class="inline-block w-8 h-8 border-4 border-primary-fixed border-t-primary rounded-full animate-spin mb-4"></div>
+          <p class="text-on-surface-variant text-sm font-body">AI 分析中…</p>
+        </div>
+
+        <!-- Error -->
+        <div id="aiError" class="hidden bg-red-50 rounded-2xl px-5 py-4 ghost-border">
+          <p class="text-error text-sm font-body" id="aiErrorMsg"></p>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
 </main>
 
 <!-- ══ MODAL: 新增 / 編輯 ══ -->
@@ -348,6 +423,10 @@ tailwind.config = {
   <button onclick="switchTab('status')" data-mob="status" class="mob-btn flex flex-col items-center gap-1 text-on-surface-variant/50">
     <span class="material-symbols-outlined">bar_chart</span>
     <span class="text-[10px] font-medium font-label">狀態</span>
+  </button>
+  <button onclick="switchTab('ai')" data-mob="ai" class="mob-btn flex flex-col items-center gap-1 text-on-surface-variant/50">
+    <span class="material-symbols-outlined">smart_toy</span>
+    <span class="text-[10px] font-medium font-label">AI</span>
   </button>
 </nav>
 
@@ -410,7 +489,7 @@ let activeTab = 'replies';
 
 function switchTab(tabId) {
   activeTab = tabId;
-  ['replies','status','admin'].forEach(id => {
+  ['replies','status','ai','admin'].forEach(id => {
     const panel = document.getElementById('tab-'+id);
     if(panel) panel.classList.toggle('hidden', id !== tabId);
     if(panel) panel.classList.toggle('flex', id === tabId);
@@ -861,6 +940,97 @@ function saveLookerUrl() {
   document.getElementById('lookerFrame').src = url;
   showToast('✅ 報表網址已更新');
 }
+
+
+// ══════════════════════════════════════
+// AI 留言分類助手
+// ══════════════════════════════════════
+let aiResultCatId = null;
+
+async function classifyMessage() {
+  const input = document.getElementById('aiInput').value.trim();
+  if (!input) { showToast('請輸入用戶留言', true); return; }
+
+  // Show loading
+  document.getElementById('aiResult').classList.add('hidden');
+  document.getElementById('aiError').classList.add('hidden');
+  document.getElementById('aiLoading').classList.remove('hidden');
+  document.getElementById('aiBtn').disabled = true;
+
+  try {
+    const data = await jsonp(SHEETS_API + '?action=classify&message=' + encodeURIComponent(input));
+
+    document.getElementById('aiLoading').classList.add('hidden');
+    document.getElementById('aiBtn').disabled = false;
+
+    if (!data || !data.category_id) throw new Error('無法判斷類別，請再試一次');
+
+    aiResultCatId = data.category_id;
+
+    // 填入分類結果
+    const cat = CATEGORIES.find(c => c.id === data.category_id);
+    document.getElementById('aiCatEmoji').textContent = cat ? emoji(cat.name) : '🤖';
+    document.getElementById('aiCatName').textContent = data.category_name || '';
+    document.getElementById('aiReason').textContent = data.reason || '';
+
+    const confidenceMap = { high: '高信心', medium: '中信心', low: '低信心' };
+    const confidenceColor = { high: 'bg-white/25', medium: 'bg-white/15', low: 'bg-white/10' };
+    const conf = data.confidence || 'medium';
+    const confEl = document.getElementById('aiConfidence');
+    confEl.textContent = confidenceMap[conf] || conf;
+    confEl.className = `flex-shrink-0 ${confidenceColor[conf]||'bg-white/15'} text-white text-[10px] font-bold px-3 py-1.5 rounded-full font-label uppercase tracking-wider`;
+
+    // 填入推薦回覆 or AI 生成回覆
+    const repliesEl = document.getElementById('aiReplies');
+    const labelEl = document.getElementById('aiRepliesLabel');
+
+    if (data.replies && data.replies.length > 0) {
+      labelEl.textContent = '推薦回覆範本';
+      repliesEl.innerHTML = data.replies.map((r, i) => replyCardHTML(r, '', i)).join('');
+    } else if (data.generated_reply) {
+      labelEl.textContent = 'AI 生成回覆';
+      const genReply = { id: 'ai-generated', title: 'AI 自動生成', body: data.generated_reply };
+      repliesEl.innerHTML = `
+        <div class="reply-card rounded-2xl p-6 ghost-border tonal-shadow-sm fade-up border-l-4 border-secondary-container">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="inline-block bg-secondary-container text-on-secondary-container text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full font-label">✨ AI 生成草稿</span>
+            <span class="text-on-surface-variant/50 text-[10px] font-body">請確認內容後再使用</span>
+          </div>
+          <p class="text-on-surface text-sm font-body leading-relaxed whitespace-pre-wrap mb-5">${esc(data.generated_reply)}</p>
+          <div class="flex justify-end">
+            <button class="copy-btn flex items-center gap-2 bg-secondary text-white px-5 py-2.5 rounded-xl text-xs font-bold font-label uppercase tracking-wider hover:opacity-90 tonal-shadow-sm"
+              onclick="copyReply(this,${JSON.stringify(data.generated_reply)})">
+              <span class="material-symbols-outlined text-[16px]">content_copy</span>複製草稿
+            </button>
+          </div>
+        </div>`;
+    } else {
+      labelEl.textContent = '推薦回覆範本';
+      repliesEl.innerHTML = `<p class="text-on-surface-variant text-sm font-body text-center py-6">此類別目前沒有回覆範本</p>`;
+    }
+
+    document.getElementById('aiResult').classList.remove('hidden');
+
+  } catch(err) {
+    document.getElementById('aiLoading').classList.add('hidden');
+    document.getElementById('aiBtn').disabled = false;
+    document.getElementById('aiErrorMsg').textContent = err.message || '發生錯誤，請稍後再試';
+    document.getElementById('aiError').classList.remove('hidden');
+  }
+}
+
+function viewAllFromAI() {
+  if (!aiResultCatId) return;
+  switchTab('replies');
+  renderCategory(aiResultCatId);
+}
+
+// Enter 鍵觸發分類
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.ctrlKey && document.getElementById('tab-ai').classList.contains('active')) {
+    classifyMessage();
+  }
+});
 
 // ══════════════════════════════════════
 // INIT
