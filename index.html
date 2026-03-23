@@ -1,473 +1,989 @@
 <!DOCTYPE html>
-<html class="light" lang="zh-Hant">
+<html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ECOCO 社群回覆平台</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script>
-tailwind.config = {
-  darkMode: "class",
-  theme: {
-    extend: {
-      colors: {
-        "surface-bright": "#fbf9f8",
-        "primary-container": "#006947",
-        "background": "#fbf9f8",
-        "on-background": "#1b1c1c",
-        "surface-container-high": "#e9e8e7",
-        "on-primary-container": "#90e5ba",
-        "on-surface-variant": "#3f4943",
-        "primary-fixed-dim": "#83d7ad",
-        "on-surface": "#1b1c1c",
-        "surface": "#fbf9f8",
-        "on-primary": "#ffffff",
-        "outline": "#6f7a72",
-        "outline-variant": "#bec9c1",
-        "on-secondary-container": "#6f5900",
-        "surface-container-highest": "#e4e2e2",
-        "surface-container-lowest": "#ffffff",
-        "secondary-container": "#fed000",
-        "surface-dim": "#dbdad9",
-        "on-primary-fixed": "#002113",
-        "on-primary-fixed-variant": "#005236",
-        "secondary": "#725c00",
-        "primary-fixed": "#9ff4c8",
-        "surface-variant": "#e4e2e2",
-        "surface-container": "#efeded",
-        "surface-container-low": "#f5f3f3",
-        "primary": "#004f34",
-        "secondary-fixed": "#ffe07f",
-        "error": "#ba1a1a",
-      },
-      fontFamily: {
-        "headline": ["Plus Jakarta Sans", "sans-serif"],
-        "body": ["Inter", "sans-serif"],
-        "label": ["Plus Jakarta Sans", "sans-serif"],
-      },
-      borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "3xl": "1.5rem", "full": "9999px" },
-    }
-  }
-}
-</script>
 <style>
-  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-  body { font-family: 'Inter', sans-serif; }
-  h1, h2, h3, h4, .font-headline { font-family: 'Plus Jakarta Sans', sans-serif; }
+/* ══ ECOCO VI Token ══ */
+:root {
+  --blue:      #060E9F;
+  --blue-dark: #04096e;
+  --blue-mid:  #0076A9;
+  --orange:    #FF5000;
+  --orange-lt: #FF7433;
+  --yellow:    #FFCE00;
+  --sky:       #8EB9C9;
+  --cream:     #FAE0B8;
+  --white:     #FFFFFF;
+  --bg:        #F4F5FA;
+  --surface:   #FFFFFF;
+  --border:    rgba(6,14,159,.10);
+  --text:      #0D0D1A;
+  --text-mute: #5A5C7A;
+  --text-light:#9395AA;
+  --sidebar-w: 220px;
+  --topbar-h:  52px;
+  --radius:    10px;
+  --radius-lg: 14px;
+  --shadow-sm: 0 2px 8px rgba(6,14,159,.06);
+  --shadow-md: 0 4px 20px rgba(6,14,159,.10);
+}
 
-  /* Tonal shadow — no heavy drop shadows */
-  .tonal-shadow-sm  { box-shadow: 0 2px 12px -2px rgba(0,79,52,0.06); }
-  .tonal-shadow-md  { box-shadow: 0 8px 32px -8px rgba(0,79,52,0.10); }
-  .tonal-shadow-lg  { box-shadow: 0 16px 48px -12px rgba(0,79,52,0.14); }
-  .tonal-shadow-xl  { box-shadow: 0 24px 64px -16px rgba(0,79,52,0.18); }
+/* ══ Reset ══ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: 'Noto Sans TC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+  display: flex;
+}
 
-  /* Glassmorphism */
-  .glass { background: rgba(251,249,248,0.75); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
-  .glass-dark { background: rgba(0,79,52,0.80); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); }
+/* ══ Scrollbar ══ */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(6,14,159,.12); border-radius: 99px; }
 
-  /* Ghost border (15% opacity only) */
-  .ghost-border { border: 1px solid rgba(190,201,193,0.15); }
+/* ══ Transitions ══ */
+* { transition: background-color .18s ease, color .18s ease, opacity .18s ease, transform .18s ease, box-shadow .18s ease; }
 
-  /* CTA gradient — "soul" */
-  .cta-gradient { background: linear-gradient(135deg, #004f34 0%, #006947 100%); }
-  .eco-progress { background: linear-gradient(90deg, #006947 0%, #fed000 100%); }
+/* ══ SIDEBAR ══ */
+#sidebar {
+  width: var(--sidebar-w);
+  min-height: 100vh;
+  background: var(--blue);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  z-index: 50;
+  overflow: hidden;
+}
 
-  /* Smooth transitions */
-  * { transition-property: color, background-color, border-color, transform, opacity, box-shadow; transition-timing-function: cubic-bezier(0.4,0,0.2,1); transition-duration: 200ms; }
+.sidebar-brand {
+  padding: 20px 18px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.sidebar-brand-icon {
+  width: 34px; height: 34px;
+  background: transparent;
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.sidebar-brand-icon .material-symbols-outlined { font-size: 18px; color: #fff; }
+.sidebar-brand-name { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: .02em; }
+.sidebar-brand-sub { font-size: 9px; color: rgba(255,255,255,.4); letter-spacing: .08em; text-transform: uppercase; margin-top: 1px; }
 
-  /* Chip style */
-  .chip { background: #9ff4c8; color: #002113; border-radius: 9999px; padding: 6px 16px; font-size: 13px; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer; }
-  .chip:hover { background: #83d7ad; }
+.sidebar-section-label {
+  font-size: 9px; font-weight: 700;
+  color: rgba(255,255,255,.3);
+  letter-spacing: .10em; text-transform: uppercase;
+  padding: 16px 18px 6px;
+}
 
-  /* Admin orange */
-  .admin-gradient { background: linear-gradient(135deg, #7d3c00 0%, #e67e22 100%); }
+.sidebar-nav { padding: 6px 10px; flex: 1; }
+.sidebar-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 12px; height: 40px;
+  border-radius: 8px;
+  font-size: 12px; font-weight: 500;
+  color: rgba(255,255,255,.55);
+  cursor: pointer; user-select: none;
+  margin-bottom: 2px;
+}
+.sidebar-item .material-symbols-outlined { font-size: 18px; flex-shrink: 0; }
+.sidebar-item:hover { background: rgba(255,255,255,.08); color: rgba(255,255,255,.9); }
+.sidebar-item.active {
+  background: var(--orange);
+  color: #fff; font-weight: 700;
+}
+.sidebar-item.active .material-symbols-outlined { font-variation-settings: 'FILL' 1, 'wght' 400; }
 
-  /* Reply card hover */
-  .reply-card { background: #ffffff; }
-  .reply-card:hover { background: #f5f3f3; }
+.sidebar-footer {
+  padding: 10px 10px 16px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+.sidebar-footer .sidebar-item { color: rgba(255,255,255,.25); }
+.sidebar-footer .sidebar-item:hover { color: rgba(255,255,255,.6); background: rgba(255,255,255,.06); }
 
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: rgba(0,79,52,.15); border-radius: 9999px; }
+.sidebar-badge {
+  margin-left: auto;
+  background: var(--yellow);
+  color: var(--blue);
+  font-size: 9px; font-weight: 900;
+  padding: 2px 7px; border-radius: 20px;
+  letter-spacing: .02em;
+}
 
-  /* Animations */
-  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
-  .fade-up { animation: fadeUp .3s cubic-bezier(.4,0,.2,1) both; }
-  .fade-up-1 { animation-delay:.04s } .fade-up-2 { animation-delay:.08s } .fade-up-3 { animation-delay:.12s }
-  .fade-up-4 { animation-delay:.16s } .fade-up-5 { animation-delay:.20s } .fade-up-6 { animation-delay:.24s }
-  .fade-up-7 { animation-delay:.28s } .fade-up-8 { animation-delay:.32s } .fade-up-9 { animation-delay:.36s }
-  .fade-up-10 { animation-delay:.40s }
+/* ══ MAIN LAYOUT ══ */
+#main {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 
-  mark { background: #ffe07f; color: #002113; border-radius: 3px; padding: 0 3px; }
+/* ══ TOPBAR ══ */
+#topbar {
+  height: var(--topbar-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 28px;
+  gap: 16px;
+  position: sticky; top: 0; z-index: 40;
+  box-shadow: var(--shadow-sm);
+}
+.topbar-title { font-size: 15px; font-weight: 700; color: var(--blue); }
+.topbar-count {
+  background: var(--yellow);
+  color: var(--blue);
+  font-size: 10px; font-weight: 700;
+  padding: 2px 10px; border-radius: 20px;
+  letter-spacing: .02em;
+}
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.topbar-version {
+  font-size: 10px; font-weight: 700;
+  color: var(--text-light);
+  background: var(--bg);
+  padding: 2px 10px; border-radius: 20px;
+  letter-spacing: .06em; text-transform: uppercase;
+}
 
-  /* No-line rule: define sections by bg, not borders */
-  .section-replies  { background: #f5f3f3; }
-  .section-white    { background: #ffffff; }
-  .section-primary  { background: #004f34; }
+/* ══ SEARCH BAR ══ */
+.search-wrap {
+  background: var(--surface);
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--border);
+}
+.search-inner {
+  max-width: 680px;
+  position: relative;
+}
+.search-inner .material-symbols-outlined {
+  position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+  font-size: 18px; color: var(--text-light); pointer-events: none;
+}
+#searchInput {
+  width: 100%;
+  height: 44px;
+  padding: 0 44px 0 44px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 13px; color: var(--text);
+  outline: none;
+}
+#searchInput:focus { border-color: var(--blue); background: #fff; box-shadow: 0 0 0 3px rgba(6,14,159,.08); }
+#searchInput::placeholder { color: var(--text-light); }
+#searchClear {
+  position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  width: 22px; height: 22px;
+  background: var(--text-light); color: #fff;
+  border: none; border-radius: 50%; cursor: pointer;
+  font-size: 11px; display: none; align-items: center; justify-content: center;
+}
+#searchClear.visible { display: flex; }
+.search-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.chip {
+  height: 28px; padding: 0 14px;
+  border-radius: 99px;
+  background: rgba(6,14,159,.06);
+  color: var(--blue);
+  font-size: 12px; font-weight: 500;
+  cursor: pointer; border: none;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.chip:hover { background: rgba(6,14,159,.12); }
+
+/* ══ CONTENT AREA ══ */
+#content { flex: 1; padding: 28px; }
+
+/* ══ SECTION HEADER ══ */
+.section-head {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 20px;
+}
+.section-head-line { width: 3px; height: 18px; background: var(--orange); border-radius: 2px; }
+.section-head-title { font-size: 11px; font-weight: 700; color: var(--text-mute); letter-spacing: .08em; text-transform: uppercase; }
+.section-head-back {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 500; color: var(--text-mute);
+  cursor: pointer; background: none; border: none;
+  font-family: 'Noto Sans TC', sans-serif;
+  padding: 4px 0;
+}
+.section-head-back:hover { color: var(--blue); }
+.section-head-back .material-symbols-outlined { font-size: 16px; }
+
+/* ══ CATEGORY GRID ══ */
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+.cat-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+.cat-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: var(--orange);
+  opacity: 0;
+  transition: opacity .2s;
+}
+.cat-card:hover { border-color: rgba(6,14,159,.15); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+.cat-card:hover::before { opacity: 1; }
+.cat-card-emoji { font-size: 24px; margin-bottom: 12px; display: block; }
+.cat-card-name { font-size: 13px; font-weight: 700; color: var(--blue); margin-bottom: 4px; }
+.cat-card-desc { font-size: 11px; color: var(--text-mute); line-height: 1.5; margin-bottom: 12px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.cat-card-footer { display: flex; align-items: center; justify-content: space-between; }
+.cat-card-count { font-size: 10px; font-weight: 700; color: var(--text-light); }
+.cat-card-arrow { font-size: 16px; color: var(--orange); opacity: 0; transition: opacity .2s, transform .2s; }
+.cat-card:hover .cat-card-arrow { opacity: 1; transform: translateX(3px); }
+
+/* ══ CATEGORY VIEW ══ */
+.cat-header {
+  background: var(--blue);
+  border-radius: var(--radius-lg);
+  padding: 22px 24px;
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 20px;
+  position: relative; overflow: hidden;
+}
+.cat-header::after {
+  content: '';
+  position: absolute; right: -20px; top: -20px;
+  width: 120px; height: 120px;
+  background: rgba(255,255,255,.04);
+  border-radius: 50%;
+}
+.cat-header-emoji {
+  width: 52px; height: 52px;
+  background: rgba(255,255,255,.12);
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 26px; flex-shrink: 0;
+}
+.cat-header-name { font-size: 18px; font-weight: 700; color: #fff; }
+.cat-header-desc { font-size: 12px; color: rgba(255,255,255,.6); margin-top: 2px; }
+.cat-header-badge {
+  margin-left: auto; flex-shrink: 0;
+  background: var(--yellow);
+  color: var(--blue);
+  font-size: 10px; font-weight: 900;
+  padding: 4px 12px; border-radius: 99px;
+}
+
+/* ══ REPLY LIST ══ */
+.reply-list { display: flex; flex-direction: column; gap: 10px; }
+.reply-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.reply-card:hover { border-color: rgba(6,14,159,.18); box-shadow: var(--shadow-md); }
+.reply-card-tag {
+  display: inline-flex; align-items: center;
+  background: rgba(6,14,159,.06);
+  color: var(--blue);
+  font-size: 10px; font-weight: 700;
+  padding: 3px 10px; border-radius: 99px;
+  letter-spacing: .02em;
+  align-self: flex-start;
+}
+.reply-card-body {
+  font-size: 13px; color: var(--text);
+  line-height: 1.8; white-space: pre-wrap;
+}
+.reply-card-footer { display: flex; justify-content: flex-end; }
+.copy-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--blue);
+  color: #fff;
+  border: none; border-radius: 8px;
+  padding: 7px 16px;
+  font-size: 11px; font-weight: 700;
+  font-family: 'Noto Sans TC', sans-serif;
+  cursor: pointer; letter-spacing: .03em;
+}
+.copy-btn .material-symbols-outlined { font-size: 14px; }
+.copy-btn:hover { background: var(--blue-dark); }
+.copy-btn.copied { background: #1a8a4a; }
+
+/* AI 生成草稿 */
+.ai-draft-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  border: 2px solid var(--yellow);
+  box-shadow: var(--shadow-sm);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.ai-draft-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--yellow);
+  color: var(--blue);
+  font-size: 10px; font-weight: 900;
+  padding: 3px 10px; border-radius: 99px;
+  align-self: flex-start;
+}
+.ai-draft-note { font-size: 10px; color: var(--text-light); margin-top: -4px; }
+.ai-draft-body { font-size: 13px; color: var(--text); line-height: 1.8; white-space: pre-wrap; }
+.ai-draft-footer { display: flex; justify-content: flex-end; }
+.draft-copy-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--yellow);
+  color: var(--blue);
+  border: none; border-radius: 8px;
+  padding: 7px 16px;
+  font-size: 11px; font-weight: 900;
+  font-family: 'Noto Sans TC', sans-serif;
+  cursor: pointer;
+}
+.draft-copy-btn:hover { background: #e6b800; }
+
+/* ══ SEARCH RESULTS ══ */
+.search-group {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1.5px solid var(--border);
+  margin-bottom: 10px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.search-group-head {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px;
+  cursor: pointer;
+  background: none; border: none; width: 100%; text-align: left;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.search-group-head:hover { background: var(--bg); }
+.search-group-emoji { font-size: 18px; }
+.search-group-name { font-size: 13px; font-weight: 700; color: var(--blue); flex: 1; }
+.search-group-count {
+  background: rgba(6,14,159,.06);
+  color: var(--blue);
+  font-size: 9px; font-weight: 700;
+  padding: 2px 9px; border-radius: 99px;
+}
+.search-group-arrow { font-size: 16px; color: var(--text-light); transition: transform .2s; }
+.search-group.open .search-group-arrow { transform: rotate(180deg); }
+.search-group-body { display: none; padding: 0 12px 12px; }
+.search-group.open .search-group-body { display: block; }
+
+mark { background: var(--yellow); color: var(--blue); border-radius: 2px; padding: 0 2px; }
+
+/* ══ LOADING / EMPTY ══ */
+.loading-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; gap: 12px; }
+.spinner { width: 28px; height: 28px; border: 3px solid rgba(6,14,159,.15); border-top-color: var(--blue); border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty-icon { font-size: 40px; color: var(--text-light); margin-bottom: 4px; }
+.empty-text { font-size: 13px; color: var(--text-mute); }
+
+/* ══ TAB PANELS ══ */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ══ MACHINE STATUS ══ */
+.status-header {
+  background: var(--blue);
+  padding: 28px 28px 24px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+.status-header-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.4); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+.status-header-title { font-size: 24px; font-weight: 900; color: #fff; }
+.status-header-sub { font-size: 12px; color: rgba(255,255,255,.5); margin-top: 4px; }
+.looker-wrap { padding: 24px; }
+.looker-frame-wrap {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1.5px solid var(--border);
+}
+
+/* ══ AI TAB ══ */
+.ai-header {
+  background: var(--blue);
+  padding: 28px 28px 24px;
+}
+.ai-header-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.4); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+.ai-header-title { font-size: 24px; font-weight: 900; color: #fff; }
+.ai-header-sub { font-size: 12px; color: rgba(255,255,255,.5); margin-top: 4px; }
+.ai-body { padding: 24px 28px; }
+
+.ai-input-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+}
+.ai-input-label { font-size: 10px; font-weight: 700; color: var(--text-mute); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px; }
+#aiInput {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 13px; color: var(--text);
+  resize: none; outline: none; line-height: 1.7;
+}
+#aiInput:focus { border-color: var(--blue); background: #fff; }
+#aiInput::placeholder { color: var(--text-light); }
+.ai-input-footer { display: flex; justify-content: flex-end; margin-top: 12px; }
+#aiBtn {
+  display: flex; align-items: center; gap: 7px;
+  background: var(--orange);
+  color: #fff;
+  border: none; border-radius: 8px;
+  padding: 9px 20px;
+  font-size: 12px; font-weight: 700;
+  font-family: 'Noto Sans TC', sans-serif;
+  cursor: pointer; letter-spacing: .03em;
+}
+#aiBtn .material-symbols-outlined { font-size: 16px; }
+#aiBtn:hover { background: var(--orange-lt); }
+#aiBtn:disabled { opacity: .6; cursor: not-allowed; }
+@keyframes rotateSpin { to { transform: rotate(360deg); } }
+.spin-icon { animation: rotateSpin .7s linear infinite; display: inline-block; }
+
+.ai-result-header {
+  background: var(--blue);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 16px;
+}
+.ai-result-emoji {
+  width: 44px; height: 44px;
+  background: rgba(255,255,255,.12);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+}
+.ai-result-cat { font-size: 16px; font-weight: 700; color: #fff; }
+.ai-result-reason { font-size: 11px; color: rgba(255,255,255,.6); margin-top: 2px; }
+.ai-confidence {
+  margin-left: auto; flex-shrink: 0;
+  font-size: 10px; font-weight: 700;
+  padding: 3px 10px; border-radius: 99px;
+}
+.ai-confidence.high { background: rgba(255,255,255,.2); color: #fff; }
+.ai-confidence.medium { background: rgba(255,255,255,.12); color: rgba(255,255,255,.8); }
+.ai-confidence.low { background: rgba(255,255,255,.07); color: rgba(255,255,255,.6); }
+
+.ai-reply-label { font-size: 10px; font-weight: 700; color: var(--text-mute); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.ai-reply-label::before { content: ''; width: 16px; height: 2px; background: var(--orange); border-radius: 1px; }
+.ai-view-all {
+  width: 100%; margin-top: 12px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px;
+  font-size: 12px; font-weight: 700;
+  color: var(--blue);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.ai-view-all:hover { background: var(--bg); border-color: rgba(6,14,159,.2); }
+.ai-view-all .material-symbols-outlined { font-size: 15px; }
+
+.ai-error {
+  background: #fff0f0;
+  border: 1.5px solid rgba(220,30,30,.15);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  font-size: 13px; color: #b91c1c;
+}
+
+/* ══ ADMIN ══ */
+.admin-header {
+  background: linear-gradient(120deg, #b34200, var(--orange));
+  padding: 28px 28px 24px;
+}
+.admin-header-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.5); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+.admin-header-title { font-size: 22px; font-weight: 900; color: #fff; }
+.admin-header-sub { font-size: 12px; color: rgba(255,255,255,.55); margin-top: 4px; }
+.admin-body { padding: 24px 28px; }
+
+.admin-notice {
+  background: rgba(6,14,159,.05);
+  border: 1.5px solid rgba(6,14,159,.1);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  display: flex; gap: 10px;
+  margin-bottom: 20px;
+  font-size: 12px; color: var(--blue);
+  align-items: flex-start;
+}
+.admin-notice .material-symbols-outlined { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+
+.looker-setting {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  border: 1.5px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+}
+.looker-setting-title { font-size: 13px; font-weight: 700; color: var(--blue); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+.looker-setting-title .material-symbols-outlined { font-size: 16px; }
+.looker-setting-sub { font-size: 11px; color: var(--text-mute); margin-bottom: 12px; }
+.looker-url-row { display: flex; gap: 8px; }
+#lookerUrlInput {
+  flex: 1; height: 38px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 0 12px;
+  font-family: 'Noto Sans TC', sans-serif; font-size: 12px; color: var(--text);
+  outline: none;
+}
+#lookerUrlInput:focus { border-color: var(--blue); background: #fff; }
+.save-btn {
+  display: flex; align-items: center; gap: 5px;
+  background: var(--blue); color: #fff;
+  border: none; border-radius: var(--radius); padding: 0 14px;
+  font-size: 11px; font-weight: 700; cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif; white-space: nowrap;
+}
+.save-btn .material-symbols-outlined { font-size: 14px; }
+.save-btn:hover { background: var(--blue-dark); }
+
+.admin-toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; flex-wrap: wrap; }
+#adminCatSelect {
+  flex: 1; min-width: 200px; height: 38px;
+  background: var(--surface); border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 0 12px;
+  font-family: 'Noto Sans TC', sans-serif; font-size: 12px; color: var(--text);
+  outline: none; cursor: pointer;
+}
+#adminCatSelect:focus { border-color: var(--blue); }
+.add-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--orange); color: #fff;
+  border: none; border-radius: var(--radius); padding: 0 16px; height: 38px;
+  font-size: 11px; font-weight: 700; cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif; letter-spacing: .03em; white-space: nowrap;
+}
+.add-btn .material-symbols-outlined { font-size: 16px; }
+.add-btn:hover { background: var(--orange-lt); }
+
+.admin-item {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  border: 1.5px solid var(--border);
+  display: flex; gap: 12px; align-items: flex-start;
+  margin-bottom: 8px; cursor: grab;
+}
+.admin-item:active { cursor: grabbing; }
+.admin-item:hover { border-color: rgba(6,14,159,.18); }
+.admin-item-drag { color: var(--text-light); font-size: 20px; padding-top: 2px; flex-shrink: 0; }
+.admin-item-body { flex: 1; min-width: 0; }
+.admin-item-tag {
+  display: inline-block;
+  background: rgba(6,14,159,.06); color: var(--blue);
+  font-size: 9px; font-weight: 700; padding: 2px 9px; border-radius: 99px;
+  margin-bottom: 5px;
+}
+.admin-item-preview { font-size: 11px; color: var(--text-mute); line-height: 1.5; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.admin-item-actions { display: flex; gap: 4px; flex-shrink: 0; }
+.edit-btn {
+  display: flex; align-items: center; gap: 4px;
+  padding: 5px 10px; border-radius: 6px;
+  font-size: 11px; font-weight: 500; color: var(--text-mute);
+  background: none; border: none; cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.edit-btn .material-symbols-outlined { font-size: 14px; }
+.edit-btn:hover { background: var(--bg); color: var(--blue); }
+.del-btn {
+  display: flex; align-items: center; gap: 4px;
+  padding: 5px 10px; border-radius: 6px;
+  font-size: 11px; font-weight: 500; color: #b91c1c;
+  background: none; border: none; cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.del-btn .material-symbols-outlined { font-size: 14px; }
+.del-btn:hover { background: #fff0f0; }
+
+/* ══ MODAL ══ */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(6,14,159,.3);
+  backdrop-filter: blur(4px);
+  display: none; align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  width: 100%; max-width: 520px;
+  box-shadow: 0 24px 64px rgba(6,14,159,.2);
+  animation: fadeUp .2s ease both;
+}
+@keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+.modal-head { padding: 20px 24px 0; display: flex; align-items: center; justify-content: space-between; }
+.modal-title { font-size: 15px; font-weight: 700; color: var(--blue); }
+.modal-close {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: none; border: none; cursor: pointer;
+  color: var(--text-mute); font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-close:hover { background: var(--bg); }
+.modal-body { padding: 18px 24px; display: flex; flex-direction: column; gap: 14px; }
+.form-field label { font-size: 10px; font-weight: 700; color: var(--text-mute); letter-spacing: .08em; text-transform: uppercase; display: block; margin-bottom: 6px; }
+.form-field select, .form-field input { width: 100%; height: 38px; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 0 12px; font-family: 'Noto Sans TC', sans-serif; font-size: 12px; color: var(--text); outline: none; }
+.form-field select:focus, .form-field input:focus { border-color: var(--blue); background: #fff; }
+.form-field textarea { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 10px 12px; font-family: 'Noto Sans TC', sans-serif; font-size: 12px; color: var(--text); outline: none; resize: none; line-height: 1.7; }
+.form-field textarea:focus { border-color: var(--blue); background: #fff; }
+.form-hint { font-size: 10px; color: var(--text-light); margin-top: 3px; }
+.modal-foot { padding: 0 24px 20px; display: flex; justify-content: flex-end; gap: 8px; }
+.btn-cancel { padding: 7px 16px; border-radius: 8px; background: none; border: 1.5px solid var(--border); color: var(--text-mute); font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; }
+.btn-cancel:hover { background: var(--bg); }
+.btn-save { display: flex; align-items: center; gap: 5px; padding: 7px 18px; border-radius: 8px; background: var(--blue); color: #fff; border: none; font-size: 11px; font-weight: 700; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; }
+.btn-save .material-symbols-outlined { font-size: 14px; }
+.btn-save:hover { background: var(--blue-dark); }
+
+/* Confirm dialog */
+.confirm-box { text-align: center; padding: 28px 24px 20px; }
+.confirm-icon { font-size: 36px; margin-bottom: 10px; }
+.confirm-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.confirm-desc { font-size: 12px; color: var(--text-mute); margin-bottom: 20px; line-height: 1.6; }
+.confirm-actions { display: flex; gap: 8px; justify-content: center; }
+.btn-del { padding: 7px 20px; border-radius: 8px; background: #b91c1c; color: #fff; border: none; font-size: 11px; font-weight: 700; cursor: pointer; font-family: 'Noto Sans TC', sans-serif; }
+.btn-del:hover { background: #991515; }
+
+/* ══ TOAST ══ */
+#toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(8px);
+  background: var(--blue); color: #fff;
+  padding: 10px 22px; border-radius: 99px;
+  font-size: 12px; font-weight: 700;
+  box-shadow: 0 8px 32px rgba(6,14,159,.25);
+  opacity: 0; pointer-events: none; z-index: 999;
+  white-space: nowrap;
+}
+#toast.error { background: #b91c1c; }
+
+/* ══ FADE ANIM ══ */
+.fade-up { animation: fadeUp .28s cubic-bezier(.4,0,.2,1) both; }
+.d1 { animation-delay: .04s } .d2 { animation-delay: .08s } .d3 { animation-delay: .12s }
+.d4 { animation-delay: .16s } .d5 { animation-delay: .20s } .d6 { animation-delay: .24s }
+.d7 { animation-delay: .28s } .d8 { animation-delay: .32s }
 </style>
 </head>
-<body class="bg-background text-on-background min-h-screen flex flex-col">
+<body>
 
-<!-- ══ TOP NAV (Glassmorphism) ══ -->
-<nav class="fixed top-0 w-full z-50 glass tonal-shadow-sm flex justify-between items-center px-6 md:px-8 py-3 h-16">
-  <div class="flex items-center gap-8">
-    <div class="flex items-center gap-3">
-      <div class="w-8 h-8 cta-gradient rounded-xl flex items-center justify-center">
-        <span class="material-symbols-outlined text-white text-sm" style="font-size:18px">recycling</span>
-      </div>
-      <span class="text-lg font-extrabold text-primary tracking-tighter font-headline">ECOCO</span>
+<!-- ══ SIDEBAR ══ -->
+<aside id="sidebar">
+  <div class="sidebar-brand">
+    <div class="sidebar-brand-icon">
+      <svg viewBox="0 0 2000 2000" xmlns="http://www.w3.org/2000/svg" width="34" height="34">
+        <path fill="#ff5000" d="M1552.11,1414.48c-211.94,37.36-414.03-104.15-451.39-316.08l612.67-108.02c-5.15-389.59-322.52-703.84-713.34-703.84S286.61,605.97,286.61,1000.01s319.41,713.45,713.44,713.45c242.85,0,457.28-121.34,586.17-306.66-11.17,3.01-22.5,5.62-34.11,7.67Z"/>
+        <path fill="#fff" d="M1191.14,737.51c-82.52,14.54-137.63,93.24-123.07,175.77l298.87-52.67c-14.57-82.56-93.27-137.66-175.8-123.09Z"/>
+      </svg>
     </div>
-    <!-- Desktop tabs -->
-    <div class="hidden md:flex items-center gap-1" id="desktopTabs">
-      <button onclick="switchTab('replies')" data-tab="replies" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold font-label tracking-tight text-primary border-b-2 border-secondary-container">
-        💬 回覆範本
-      </button>
-      <button onclick="switchTab('status')" data-tab="status" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold font-label tracking-tight text-on-surface-variant hover:bg-surface-container-low border-b-2 border-transparent">
-        📊 機台狀態
-      </button>
-      <button onclick="switchTab('ai')" data-tab="ai" class="tab-btn px-4 py-2 rounded-xl text-sm font-semibold font-label tracking-tight text-on-surface-variant hover:bg-surface-container-low border-b-2 border-transparent">
-        🤖 AI 助手
-      </button>
+    <div>
+      <div class="sidebar-brand-name">ECOCO</div>
+      <div class="sidebar-brand-sub">社群回覆平台</div>
     </div>
   </div>
-  <div class="flex items-center gap-2">
-    <span class="hidden md:inline-block bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full font-label">v1.1</span>
-    <!-- 隱藏後台入口：雙擊進入 -->
-    <button ondblclick="enterAdmin()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container text-transparent hover:text-on-surface-variant select-none text-xs">●●●</button>
-  </div>
-</nav>
 
-<!-- ══ SIDE NAV (Desktop) ══ -->
-<aside class="hidden md:flex h-screen w-60 fixed left-0 top-0 z-40 bg-primary flex-col pt-20 pb-8">
-  <!-- Brand -->
-  <div class="px-5 mb-8">
-    <div class="w-10 h-10 bg-secondary-container rounded-xl flex items-center justify-center">
-        <span class="material-symbols-outlined text-on-secondary-container font-bold" style="font-size:20px">eco</span>
-      </div>
-      <div>
-        <h3 class="text-surface-bright font-black text-[13px] font-headline leading-tight">回覆平台</h3>
-        <p class="text-on-primary-container/50 text-[9px] uppercase tracking-widest font-label">Social CS Tool</p>
-      </div>
-  </div>
-
-  <!-- Nav -->
-  <nav class="flex-1 space-y-0.5 px-3">
-    <button onclick="switchTab('replies')" data-side="replies" class="side-btn w-full flex items-center gap-3 bg-primary-container text-secondary-container rounded-r-full font-bold px-4 py-3 text-left">
-      <span class="material-symbols-outlined text-[20px]">chat_bubble</span>
-      <span class="uppercase tracking-widest text-[11px] font-label">回覆範本</span>
-    </button>
-    <button onclick="switchTab('status')" data-side="status" class="side-btn w-full flex items-center gap-3 text-on-primary-container/60 hover:text-surface-bright hover:bg-primary-container/50 rounded-r-full px-4 py-3 text-left">
-      <span class="material-symbols-outlined text-[20px]">bar_chart</span>
-      <span class="uppercase tracking-widest text-[11px] font-label">機台狀態</span>
-    </button>
-    <button onclick="switchTab('ai')" data-side="ai" class="side-btn w-full flex items-center gap-3 text-on-primary-container/60 hover:text-surface-bright hover:bg-primary-container/50 rounded-r-full px-4 py-3 text-left">
-      <span class="material-symbols-outlined text-[20px]">smart_toy</span>
-      <span class="uppercase tracking-widest text-[11px] font-label">AI 助手</span>
-    </button>
+  <div class="sidebar-section-label">主要功能</div>
+  <nav class="sidebar-nav">
+    <div class="sidebar-item active" onclick="switchTab('replies')" data-tab="replies">
+      <span class="material-symbols-outlined">chat_bubble</span>
+      回覆範本
+    </div>
+    <div class="sidebar-item" onclick="switchTab('status')" data-tab="status">
+      <span class="material-symbols-outlined">bar_chart</span>
+      機台狀態
+    </div>
+    <div class="sidebar-item" onclick="switchTab('ai')" data-tab="ai">
+      <span class="material-symbols-outlined">smart_toy</span>
+      AI 助手
+      <span class="sidebar-badge">NEW</span>
+    </div>
   </nav>
 
-  <!-- Bottom -->
-  <div class="px-3 border-t border-on-primary-container/10 pt-4 mt-4 space-y-0.5">
-    <button ondblclick="enterAdmin()" class="w-full flex items-center gap-3 text-on-primary-container/40 hover:text-on-primary-container/70 hover:bg-primary-container/30 rounded-r-full px-4 py-2.5 text-left">
-      <span class="material-symbols-outlined text-[18px]">settings</span>
-      <span class="uppercase tracking-widest text-[10px] font-label">管理後台</span>
-    </button>
+  <div class="sidebar-footer">
+    <div class="sidebar-item" ondblclick="enterAdmin()" id="adminSideItem" title="雙擊進入後台">
+      <span class="material-symbols-outlined">settings</span>
+      管理後台
+    </div>
   </div>
 </aside>
 
-<!-- ══ MAIN CONTENT ══ -->
-<main class="md:ml-60 pt-16 flex-1 flex flex-col">
+<!-- ══ MAIN ══ -->
+<div id="main">
+
+  <!-- TOPBAR -->
+  <div id="topbar">
+    <span class="topbar-title" id="topbarTitle">回覆範本</span>
+    <span class="topbar-count" id="topbarCount"></span>
+    <div class="topbar-right">
+      <span class="topbar-version">v1.1</span>
+    </div>
+  </div>
 
   <!-- ── TAB: 回覆範本 ── -->
-  <div id="tab-replies" class="tab-panel flex-1 flex flex-col">
-
-    <!-- Hero -->
-    <section class="relative px-6 md:px-12 pt-14 pb-16 overflow-hidden section-white">
-      <!-- Decorative blobs -->
-      <div class="absolute -top-10 -right-10 w-72 h-72 bg-secondary-container rounded-full mix-blend-multiply filter blur-3xl opacity-20 pointer-events-none"></div>
-      <div class="absolute bottom-0 right-1/3 w-48 h-48 bg-primary rounded-full mix-blend-multiply filter blur-3xl opacity-8 pointer-events-none"></div>
-
-      <div class="max-w-4xl relative">
-        <!-- Asymmetric headline -->
-        <p class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant/60 font-label mb-3">社群客服工具</p>
-        <h1 class="text-5xl md:text-6xl font-extrabold text-primary leading-tight tracking-tighter font-headline mb-8">
-          快速回覆用戶。
-        </h1>
-
-        <!-- Search -->
-        <div class="relative group max-w-2xl">
-          <div class="absolute inset-y-0 left-5 flex items-center pointer-events-none text-primary/30 group-focus-within:text-primary">
-            <span class="material-symbols-outlined text-2xl">search</span>
-          </div>
-          <input id="searchInput" type="text" autocomplete="off"
-            placeholder="搜尋問題類別或回覆內容…"
-            class="w-full pl-14 pr-12 py-5 bg-white rounded-2xl border-none tonal-shadow-lg focus:ring-4 focus:ring-secondary-container/40 text-base font-body placeholder:text-on-surface-variant/40 outline-none">
-          <button id="searchClear" onclick="clearSearch()" class="absolute right-4 top-1/2 -translate-y-1/2 w-7 h-7 bg-surface-container rounded-full items-center justify-center text-on-surface-variant text-sm hidden">✕</button>
-        </div>
-
-        <!-- Quick chips -->
-        <div class="mt-5 flex gap-2 flex-wrap items-center">
-          <span class="text-[10px] font-bold uppercase tracking-widest text-on-surface-variant/40 font-label mr-1">快速搜尋：</span>
-          <button onclick="quickSearch('滿倉')" class="chip">滿倉</button>
-          <button onclick="quickSearch('維修')" class="chip">維修</button>
-          <button onclick="quickSearch('點數')" class="chip">點數</button>
-          <button onclick="quickSearch('登入')" class="chip">登入</button>
-          <button onclick="quickSearch('退瓶')" class="chip">退瓶</button>
-        </div>
+  <div id="tab-replies" class="tab-panel active">
+    <!-- Search -->
+    <div class="search-wrap">
+      <div class="search-inner">
+        <span class="material-symbols-outlined">search</span>
+        <input type="text" id="searchInput" placeholder="搜尋問題類別或回覆內容…" autocomplete="off">
+        <button id="searchClear" onclick="clearSearch()">✕</button>
       </div>
-    </section>
-
-    <!-- Content area -->
-    <section class="section-replies flex-1 px-6 md:px-12 py-10">
-      <div class="max-w-5xl">
-        <!-- Section label -->
-        <div class="flex items-center gap-4 mb-8" id="sectionHeader">
-          <div class="h-0.5 w-8 bg-secondary-container"></div>
-          <h2 class="text-xs font-bold uppercase tracking-widest text-on-surface-variant/60 font-label" id="sectionTitle">問題類別</h2>
-        </div>
-        <!-- Dynamic content -->
-        <div id="app"></div>
+      <div class="search-chips">
+        <span class="chip" onclick="quickSearch('滿倉')">滿倉</span>
+        <span class="chip" onclick="quickSearch('維修')">維修</span>
+        <span class="chip" onclick="quickSearch('點數')">點數</span>
+        <span class="chip" onclick="quickSearch('登入')">登入</span>
+        <span class="chip" onclick="quickSearch('退瓶')">退瓶</span>
       </div>
-    </section>
+    </div>
+
+    <!-- Content -->
+    <div id="content">
+      <div id="app"></div>
+    </div>
   </div>
 
   <!-- ── TAB: 機台狀態 ── -->
-  <div id="tab-status" class="tab-panel hidden flex-1 flex flex-col">
-    <section class="relative px-6 md:px-12 pt-14 pb-8 section-white overflow-hidden">
-      <div class="absolute -top-8 -right-8 w-56 h-56 bg-secondary-container rounded-full mix-blend-multiply filter blur-3xl opacity-15 pointer-events-none"></div>
-      <p class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant/60 font-label mb-3">營運數據</p>
-      <h1 class="text-4xl md:text-5xl font-extrabold text-primary leading-tight tracking-tighter font-headline">機台即時狀態</h1>
-      <p class="text-on-surface-variant mt-3 font-body text-sm">資料來源：ECOCO 營運數據 · Looker Studio</p>
-    </section>
-    <section class="section-replies flex-1 px-6 md:px-12 py-10">
-      <div class="max-w-5xl bg-surface-container-lowest rounded-3xl overflow-hidden tonal-shadow-md ghost-border">
+  <div id="tab-status" class="tab-panel">
+    <div class="status-header">
+      <div class="status-header-label">營運數據</div>
+      <div class="status-header-title">機台即時狀態</div>
+      <div class="status-header-sub">資料來源：ECOCO 營運數據 · Looker Studio</div>
+    </div>
+    <div class="looker-wrap">
+      <div class="looker-frame-wrap">
         <iframe id="lookerFrame"
           src="https://lookerstudio.google.com/embed/reporting/634f8f09-ecf7-4699-82c7-7c77a9ad78ea/page/p_myealqpprd"
           allowfullscreen
           sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
-          class="w-full border-none block" style="height:700px"></iframe>
+          style="width:100%;height:680px;border:none;display:block"></iframe>
       </div>
-    </section>
+    </div>
   </div>
-
-  <!-- ── TAB: 管理後台 (hidden, dblclick unlock) ── -->
-  <div id="tab-admin" class="tab-panel hidden flex-1 flex flex-col">
-    <section class="relative px-6 md:px-12 pt-14 pb-8 overflow-hidden" style="background:linear-gradient(135deg,#7d3c00,#e67e22)">
-      <div class="absolute -top-8 -right-8 w-56 h-56 bg-white/10 rounded-full filter blur-3xl pointer-events-none"></div>
-      <p class="text-[11px] font-bold uppercase tracking-widest text-white/60 font-label mb-3">系統管理</p>
-      <h1 class="text-4xl font-extrabold text-white leading-tight tracking-tighter font-headline">回覆範本管理後台</h1>
-      <p class="text-white/70 mt-2 font-body text-sm">新增、編輯、刪除回覆，拖曳調整順序</p>
-    </section>
-    <section class="section-replies flex-1 px-6 md:px-12 py-10">
-      <div class="max-w-3xl">
-        <!-- Notice -->
-        <div class="bg-primary-fixed/40 rounded-2xl px-5 py-4 mb-8 flex gap-3 items-start ghost-border">
-          <span class="material-symbols-outlined text-primary text-xl mt-0.5">cloud_done</span>
-          <p class="text-on-primary-fixed text-sm font-body leading-relaxed">已串接 Google Sheets，所有新增、編輯、刪除操作將即時同步並永久儲存。</p>
-        </div>
-
-        <!-- Looker Studio 設定 -->
-        <div class="bg-surface-container-lowest rounded-2xl p-6 ghost-border tonal-shadow-sm mb-8">
-          <h3 class="text-sm font-bold font-headline text-primary mb-1 flex items-center gap-2">
-            <span class="material-symbols-outlined text-[18px]">bar_chart</span>機台狀態報表網址
-          </h3>
-          <p class="text-on-surface-variant text-xs font-body mb-4">修改後點「儲存」，機台狀態分頁會立即套用新報表。</p>
-          <div class="flex gap-3 items-center">
-            <input id="lookerUrlInput" type="text"
-              class="flex-1 h-11 bg-surface-container-high rounded-xl px-4 text-sm font-body border-none outline-none focus:ring-2 focus:ring-secondary-container/50"
-              placeholder="https://lookerstudio.google.com/embed/reporting/...">
-            <button onclick="saveLookerUrl()" class="cta-gradient text-white px-5 py-2.5 rounded-xl text-sm font-bold font-label flex items-center gap-2 hover:opacity-90 tonal-shadow-sm whitespace-nowrap">
-              <span class="material-symbols-outlined text-[16px]">save</span>儲存
-            </button>
-          </div>
-        </div>
-
-        <!-- Toolbar -->
-        <div class="flex gap-3 items-center mb-6 flex-wrap">
-          <select id="adminCatSelect" onchange="renderAdminList()" class="flex-1 min-w-[200px] h-11 bg-surface-container-lowest rounded-xl px-4 text-sm font-body text-on-surface border-none tonal-shadow-sm outline-none focus:ring-2 focus:ring-secondary-container/50 cursor-pointer"></select>
-          <button onclick="openAddModal()" class="cta-gradient text-white px-5 py-2.5 rounded-xl text-sm font-bold font-label uppercase tracking-wider flex items-center gap-2 hover:opacity-90 tonal-shadow-md">
-            <span class="material-symbols-outlined text-[18px]">add_circle</span>新增回覆
-          </button>
-        </div>
-        <div id="adminList"></div>
-      </div>
-    </section>
-  </div>
-
 
   <!-- ── TAB: AI 助手 ── -->
-  <div id="tab-ai" class="tab-panel hidden flex-1 flex flex-col">
-    <section class="relative px-6 md:px-12 pt-14 pb-8 section-white overflow-hidden">
-      <div class="absolute -top-8 -right-8 w-56 h-56 bg-secondary-container rounded-full mix-blend-multiply filter blur-3xl opacity-15 pointer-events-none"></div>
-      <p class="text-[11px] font-bold uppercase tracking-widest text-on-surface-variant/60 font-label mb-3">智慧分類</p>
-      <h1 class="text-4xl md:text-5xl font-extrabold text-primary leading-tight tracking-tighter font-headline">AI 留言分類助手</h1>
-      <p class="text-on-surface-variant mt-3 font-body text-sm">貼上用戶留言，AI 自動判斷類別並推薦最適合的回覆範本</p>
-    </section>
-    <section class="section-replies flex-1 px-6 md:px-12 py-10">
-      <div class="max-w-3xl">
+  <div id="tab-ai" class="tab-panel">
+    <div class="ai-header">
+      <div class="ai-header-label">智慧分類</div>
+      <div class="ai-header-title">AI 留言分類助手</div>
+      <div class="ai-header-sub">貼上用戶留言，AI 自動判斷類別並推薦最適合的回覆範本</div>
+    </div>
+    <div class="ai-body">
+      <div style="max-width:680px">
 
-        <!-- 輸入區 -->
-        <div class="bg-surface-container-lowest rounded-2xl p-6 ghost-border tonal-shadow-sm mb-6">
-          <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant/70 font-label mb-3">貼上用戶留言</label>
-          <textarea id="aiInput" rows="4"
-            placeholder="例：你們的機台已經滿了好幾天了，什麼時候才會來清啊？"
-            class="w-full bg-surface-container-high rounded-xl px-4 py-3 text-sm font-body border-none outline-none focus:ring-2 focus:ring-secondary-container/50 placeholder:text-on-surface-variant/30 resize-none leading-relaxed"></textarea>
-          <div class="flex justify-end mt-4">
-            <button onclick="classifyMessage()" id="aiBtn"
-              class="cta-gradient text-white px-6 py-2.5 rounded-xl text-sm font-bold font-label uppercase tracking-wider flex items-center gap-2 hover:opacity-90 tonal-shadow-md">
-              <span class="material-symbols-outlined text-[16px]">auto_awesome</span>自動分類
+        <!-- Input -->
+        <div class="ai-input-card">
+          <div class="ai-input-label">貼上用戶留言</div>
+          <textarea id="aiInput" rows="4" placeholder="例：你們的機台已經滿了好幾天了，什麼時候才會來清啊？"></textarea>
+          <div class="ai-input-footer">
+            <button id="aiBtn" onclick="classifyMessage()">
+              <span class="material-symbols-outlined">auto_awesome</span>
+              自動分類
             </button>
           </div>
-        </div>
-
-        <!-- 結果區 -->
-        <div id="aiResult" class="hidden">
-          <!-- 分類結果標頭 -->
-          <div id="aiCatHeader" class="cta-gradient rounded-2xl p-5 mb-5 flex items-center gap-4 tonal-shadow-md">
-            <div id="aiCatEmoji" class="w-12 h-12 bg-white/15 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 backdrop-blur-sm"></div>
-            <div class="flex-1">
-              <p class="text-white/60 text-[10px] font-bold uppercase tracking-widest font-label mb-0.5">判斷類別</p>
-              <h3 id="aiCatName" class="text-white font-bold text-lg font-headline"></h3>
-              <p id="aiReason" class="text-white/70 text-xs font-body mt-0.5"></p>
-            </div>
-            <div id="aiConfidence" class="flex-shrink-0 bg-white/20 text-white text-[10px] font-bold px-3 py-1.5 rounded-full font-label uppercase tracking-wider"></div>
-          </div>
-
-          <!-- 推薦回覆 / AI 生成 -->
-          <div class="flex items-center gap-3 mb-4">
-            <div class="h-0.5 w-6 bg-secondary-container"></div>
-            <p class="text-xs font-bold uppercase tracking-widest text-on-surface-variant/60 font-label" id="aiRepliesLabel">推薦回覆範本</p>
-          </div>
-          <div id="aiReplies" class="space-y-3"></div>
-
-          <!-- 查看全部 -->
-          <button id="aiViewAll" onclick="viewAllFromAI()"
-            class="mt-5 w-full bg-surface-container-lowest ghost-border rounded-2xl py-3 text-sm font-semibold font-label text-primary hover:bg-surface-container flex items-center justify-center gap-2 tonal-shadow-sm">
-            <span class="material-symbols-outlined text-[16px]">grid_view</span>查看此類別所有回覆
-          </button>
         </div>
 
         <!-- Loading -->
-        <div id="aiLoading" class="hidden text-center py-16">
-          <div class="inline-block w-8 h-8 border-4 border-primary-fixed border-t-primary rounded-full animate-spin mb-4"></div>
-          <p class="text-on-surface-variant text-sm font-body">AI 分析中…</p>
+        <div id="aiLoading" style="display:none" class="loading-wrap">
+          <div class="spinner"></div>
+          <div class="empty-text">AI 分析中，請稍候…</div>
         </div>
 
         <!-- Error -->
-        <div id="aiError" class="hidden bg-red-50 rounded-2xl px-5 py-4 ghost-border">
-          <p class="text-error text-sm font-body" id="aiErrorMsg"></p>
+        <div id="aiError" style="display:none" class="ai-error">
+          <span id="aiErrorMsg"></span>
+        </div>
+
+        <!-- Result -->
+        <div id="aiResult" style="display:none">
+          <div class="ai-result-header">
+            <div class="ai-result-emoji" id="aiCatEmoji"></div>
+            <div>
+              <div class="ai-result-cat" id="aiCatName"></div>
+              <div class="ai-result-reason" id="aiReason"></div>
+            </div>
+            <div class="ai-confidence" id="aiConfidence"></div>
+          </div>
+          <div class="ai-reply-label" id="aiRepliesLabel">推薦回覆範本</div>
+          <div id="aiReplies" class="reply-list"></div>
+          <button class="ai-view-all" onclick="viewAllFromAI()">
+            <span class="material-symbols-outlined">grid_view</span>查看此類別所有回覆
+          </button>
         </div>
 
       </div>
-    </section>
+    </div>
   </div>
 
-</main>
+  <!-- ── TAB: 管理後台 ── -->
+  <div id="tab-admin" class="tab-panel">
+    <div class="admin-header">
+      <div class="admin-header-label">系統管理</div>
+      <div class="admin-header-title">回覆範本管理後台</div>
+      <div class="admin-header-sub">新增、編輯、刪除回覆，拖曳調整順序</div>
+    </div>
+    <div class="admin-body">
 
-<!-- ══ MODAL: 新增 / 編輯 ══ -->
-<div id="replyModal" class="fixed inset-0 z-[500] hidden items-center justify-center p-5" style="background:rgba(0,0,0,.40);backdrop-filter:blur(4px)">
-  <div class="bg-surface-container-lowest w-full max-w-xl rounded-3xl tonal-shadow-xl ghost-border animate-[fadeUp_.2s_ease_both]">
-    <div class="flex items-center justify-between px-7 pt-6 pb-0">
-      <h3 id="modalTitle" class="text-lg font-bold font-headline text-primary">新增回覆</h3>
-      <button onclick="closeModal()" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container text-on-surface-variant text-base">✕</button>
+      <div class="admin-notice">
+        <span class="material-symbols-outlined">cloud_done</span>
+        已串接 Google Sheets，所有新增、編輯、刪除操作將即時同步並永久儲存。
+      </div>
+
+      <!-- Looker URL -->
+      <div class="looker-setting">
+        <div class="looker-setting-title">
+          <span class="material-symbols-outlined">bar_chart</span>機台狀態報表網址
+        </div>
+        <div class="looker-setting-sub">修改後點「儲存」，機台狀態分頁會立即套用新報表。</div>
+        <div class="looker-url-row">
+          <input type="text" id="lookerUrlInput" placeholder="https://lookerstudio.google.com/embed/reporting/...">
+          <button class="save-btn" onclick="saveLookerUrl()">
+            <span class="material-symbols-outlined">save</span>儲存
+          </button>
+        </div>
+      </div>
+
+      <!-- Reply list -->
+      <div class="admin-toolbar">
+        <select id="adminCatSelect" onchange="renderAdminList()"></select>
+        <button class="add-btn" onclick="openAddModal()">
+          <span class="material-symbols-outlined">add_circle</span>新增回覆
+        </button>
+      </div>
+      <div id="adminList"></div>
     </div>
-    <div class="px-7 py-5 space-y-5">
-      <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant/70 font-label mb-2">所屬類別</label>
-        <select id="modalCat" class="w-full h-11 bg-surface-container-high rounded-xl px-4 text-sm font-body border-none outline-none focus:ring-2 focus:ring-secondary-container/50"></select>
+  </div>
+
+</div><!-- /#main -->
+
+<!-- ══ MODAL: 新增/編輯 ══ -->
+<div id="replyModal" class="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="modalTitle">新增回覆</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label>所屬類別</label>
+        <select id="modalCat"></select>
       </div>
-      <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant/70 font-label mb-2">情境標題</label>
-        <input id="modalTitleInput" type="text" maxlength="30" placeholder="例：感謝正面回饋（通用）" class="w-full h-11 bg-surface-container-high rounded-xl px-4 text-sm font-body border-none outline-none focus:ring-2 focus:ring-secondary-container/50 placeholder:text-on-surface-variant/30">
-        <p class="text-[11px] text-on-surface-variant/50 mt-1.5 font-body">建議 15 字以內</p>
+      <div class="form-field">
+        <label>情境標題</label>
+        <input type="text" id="modalTitleInput" maxlength="30" placeholder="例：感謝正面回饋（通用）">
+        <div class="form-hint">建議 15 字以內</div>
       </div>
-      <div>
-        <label class="block text-xs font-bold uppercase tracking-wider text-on-surface-variant/70 font-label mb-2">回覆內文</label>
-        <textarea id="modalBody" rows="7" placeholder="輸入完整回覆內文，換行直接按 Enter，可包含 emoji" class="w-full bg-surface-container-high rounded-xl px-4 py-3 text-sm font-body border-none outline-none focus:ring-2 focus:ring-secondary-container/50 placeholder:text-on-surface-variant/30 resize-none leading-relaxed"></textarea>
+      <div class="form-field">
+        <label>回覆內文</label>
+        <textarea id="modalBody" rows="7" placeholder="輸入完整回覆內文，換行直接按 Enter，可包含 emoji"></textarea>
       </div>
     </div>
-    <div class="px-7 pb-6 flex justify-end gap-3">
-      <button onclick="closeModal()" class="px-5 py-2.5 rounded-xl text-sm font-semibold font-label text-on-surface-variant hover:bg-surface-container">取消</button>
-      <button onclick="saveReply()" class="cta-gradient text-white px-6 py-2.5 rounded-xl text-sm font-bold font-label uppercase tracking-wide hover:opacity-90 tonal-shadow-md flex items-center gap-2">
-        <span class="material-symbols-outlined text-[16px]">save</span>儲存
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn-save" onclick="saveReply()">
+        <span class="material-symbols-outlined">save</span>儲存
       </button>
     </div>
   </div>
 </div>
 
-<!-- ══ CONFIRM DIALOG ══ -->
-<div id="confirmOverlay" class="fixed inset-0 z-[600] hidden items-center justify-center p-5" style="background:rgba(0,0,0,.40);backdrop-filter:blur(4px)">
-  <div class="bg-surface-container-lowest w-full max-w-sm rounded-3xl tonal-shadow-xl ghost-border text-center px-8 py-8">
-    <div class="text-4xl mb-4">🗑️</div>
-    <h3 class="text-base font-bold font-headline mb-2">確認刪除</h3>
-    <p id="confirmDesc" class="text-sm text-on-surface-variant font-body mb-6 leading-relaxed"></p>
-    <div class="flex gap-3 justify-center">
-      <button onclick="closeConfirm()" class="px-5 py-2.5 rounded-xl text-sm font-semibold font-label text-on-surface-variant hover:bg-surface-container">取消</button>
-      <button id="confirmOkBtn" class="bg-error text-white px-5 py-2.5 rounded-xl text-sm font-bold font-label hover:opacity-90">刪除</button>
+<!-- ══ CONFIRM ══ -->
+<div id="confirmOverlay" class="modal-overlay" onclick="if(event.target===this)closeConfirm()">
+  <div class="modal" style="max-width:380px">
+    <div class="confirm-box">
+      <div class="confirm-icon">🗑️</div>
+      <div class="confirm-title">確認刪除</div>
+      <p class="confirm-desc" id="confirmDesc"></p>
+      <div class="confirm-actions">
+        <button class="btn-cancel" onclick="closeConfirm()">取消</button>
+        <button class="btn-del" id="confirmOkBtn">刪除</button>
+      </div>
     </div>
   </div>
 </div>
 
 <!-- ══ TOAST ══ -->
-<div id="toast" class="fixed bottom-7 left-1/2 -translate-x-1/2 translate-y-3 opacity-0 pointer-events-none z-[999] cta-gradient text-white px-6 py-3 rounded-full text-sm font-semibold font-label tonal-shadow-xl transition-all duration-300"></div>
+<div id="toast"></div>
 
-<!-- ══ MOBILE BOTTOM NAV ══ -->
-<nav class="md:hidden fixed bottom-0 w-full glass border-t border-outline-variant/10 flex justify-around items-center py-3 z-50">
-  <button onclick="switchTab('replies')" data-mob="replies" class="mob-btn flex flex-col items-center gap-1 text-primary">
-    <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">chat_bubble</span>
-    <span class="text-[10px] font-bold font-label">回覆</span>
-  </button>
-  <button onclick="switchTab('status')" data-mob="status" class="mob-btn flex flex-col items-center gap-1 text-on-surface-variant/50">
-    <span class="material-symbols-outlined">bar_chart</span>
-    <span class="text-[10px] font-medium font-label">狀態</span>
-  </button>
-  <button onclick="switchTab('ai')" data-mob="ai" class="mob-btn flex flex-col items-center gap-1 text-on-surface-variant/50">
-    <span class="material-symbols-outlined">smart_toy</span>
-    <span class="text-[10px] font-medium font-label">AI</span>
-  </button>
-</nav>
+<!-- ══ MATERIAL ICONS ══ -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
 
 <script>
 // ══════════════════════════════════════
-// DATA
+// CONFIG
 // ══════════════════════════════════════
 let CATEGORIES = [];
-
 const SHEETS_API = 'https://script.google.com/macros/s/AKfycbwzfJECt4mCgIlMxLLGVUCSectRW4SBPOf9yXZA42vy6OND7_TSZfmsaKo3brab70yq/exec';
+const DEFAULT_LOOKER_URL = 'https://lookerstudio.google.com/embed/reporting/634f8f09-ecf7-4699-82c7-7c77a9ad78ea/page/p_myealqpprd';
 
-// JSONP loader — bypasses CORS for Apps Script GET
+// ══════════════════════════════════════
+// JSONP
+// ══════════════════════════════════════
 function jsonp(url) {
   return new Promise((resolve, reject) => {
     const cbName = '_jsonp_' + Date.now();
     const script = document.createElement('script');
-    const timeout = setTimeout(() => {
-      cleanup(); reject(new Error('timeout'));
-    }, 40000);
-    function cleanup() {
-      clearTimeout(timeout);
-      delete window[cbName];
-      if (script.parentNode) script.parentNode.removeChild(script);
-    }
+    const timeout = setTimeout(() => { cleanup(); reject(new Error('請求逾時，請稍後再試')); }, 40000);
+    function cleanup() { clearTimeout(timeout); delete window[cbName]; if (script.parentNode) script.parentNode.removeChild(script); }
     window[cbName] = (data) => { cleanup(); resolve(data); };
     script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cbName;
-    script.onerror = () => { cleanup(); reject(new Error('script error')); };
+    script.onerror = () => { cleanup(); reject(new Error('網路錯誤，請稍後再試')); };
     document.head.appendChild(script);
   });
 }
 
+// ══════════════════════════════════════
+// INIT
+// ══════════════════════════════════════
 async function loadData() {
   showLoading();
   try {
     CATEGORIES = await jsonp(SHEETS_API);
+    updateTopbarCount();
   } catch(e) {
     document.getElementById('app').innerHTML = `
-      <div class="text-center py-16">
-        <span class="material-symbols-outlined text-5xl text-on-surface-variant/30 mb-4 block">wifi_off</span>
-        <h3 class="font-headline font-bold text-primary text-lg mb-2">無法載入資料</h3>
-        <p class="text-on-surface-variant text-sm font-body">請確認網路連線，或稍後再試</p>
+      <div class="loading-wrap">
+        <span class="material-symbols-outlined empty-icon">wifi_off</span>
+        <div style="font-size:14px;font-weight:700;color:var(--blue)">無法載入資料</div>
+        <div class="empty-text">請確認網路連線，或稍後再試</div>
       </div>`;
     return;
   }
@@ -475,452 +991,8 @@ async function loadData() {
 }
 
 function showLoading() {
-  document.getElementById('app').innerHTML = `
-    <div class="text-center py-16">
-      <div class="inline-block w-8 h-8 border-4 border-primary-fixed border-t-primary rounded-full animate-spin mb-4"></div>
-      <p class="text-on-surface-variant text-sm font-body">載入回覆範本中…</p>
-    </div>`;
+  document.getElementById('app').innerHTML = `<div class="loading-wrap"><div class="spinner"></div><div class="empty-text">載入回覆範本中…</div></div>`;
 }
-
-// ══════════════════════════════════════
-// TAB SWITCHING
-// ══════════════════════════════════════
-let activeTab = 'replies';
-
-function switchTab(tabId) {
-  activeTab = tabId;
-  ['replies','status','ai','admin'].forEach(id => {
-    const panel = document.getElementById('tab-'+id);
-    if(panel) panel.classList.toggle('hidden', id !== tabId);
-    if(panel) panel.classList.toggle('flex', id === tabId);
-  });
-  // Desktop tabs
-  document.querySelectorAll('.tab-btn').forEach(b => {
-    const active = b.dataset.tab === tabId;
-    b.classList.toggle('text-primary', active);
-    b.classList.toggle('border-secondary-container', active);
-    b.classList.toggle('text-on-surface-variant', !active);
-    b.classList.toggle('border-transparent', !active);
-  });
-  // Side nav
-  document.querySelectorAll('.side-btn').forEach(b => {
-    const active = b.dataset.side === tabId;
-    b.classList.toggle('bg-primary-container', active);
-    b.classList.toggle('text-secondary-container', active);
-    b.classList.toggle('font-bold', active);
-    b.classList.toggle('text-on-primary-container/60', !active);
-  });
-  // Mobile
-  document.querySelectorAll('.mob-btn').forEach(b => {
-    const active = b.dataset.mob === tabId;
-    b.classList.toggle('text-primary', active);
-    b.classList.toggle('text-on-surface-variant/50', !active);
-  });
-  if(tabId === 'admin') {
-    renderAdminList();
-    const input = document.getElementById('lookerUrlInput');
-    if(input) input.value = localStorage.getItem('lookerUrl') || DEFAULT_LOOKER_URL;
-  }
-}
-
-// ══════════════════════════════════════
-// HIDDEN ADMIN ENTRY (double-click)
-// ══════════════════════════════════════
-let adminUnlocked = false;
-function enterAdmin() {
-  if(!adminUnlocked) {
-    adminUnlocked = true;
-    // Add to desktop tabs
-    const tabs = document.getElementById('desktopTabs');
-    const btn = document.createElement('button');
-    btn.dataset.tab = 'admin';
-    btn.className = 'tab-btn px-4 py-2 rounded-xl text-sm font-semibold font-label tracking-tight text-on-surface-variant hover:bg-surface-container-low border-b-2 border-transparent';
-    btn.innerHTML = '⚙️ 管理後台';
-    btn.onclick = () => switchTab('admin');
-    tabs.appendChild(btn);
-    // Add to side nav (update side btn)
-    const side = document.querySelector('[data-side="status"]').parentElement;
-    const sideBtn = document.createElement('button');
-    sideBtn.dataset.side = 'admin';
-    sideBtn.className = 'side-btn w-full flex items-center gap-3 text-on-primary-container/60 hover:text-surface-bright hover:bg-primary-container/50 rounded-r-full px-4 py-3 text-left';
-    sideBtn.innerHTML = `<span class="material-symbols-outlined text-[20px]">manage_accounts</span><span class="uppercase tracking-widest text-[11px] font-label">管理後台</span>`;
-    sideBtn.onclick = () => switchTab('admin');
-    side.insertBefore(sideBtn, side.querySelector('[data-side="status"]').nextSibling);
-  }
-  switchTab('admin');
-}
-
-// ══════════════════════════════════════
-// UTILS
-// ══════════════════════════════════════
-let currentCatId = null, searchQuery = '';
-
-function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-function hl(text, q) {
-  if(!q) return esc(text);
-  return esc(text).replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'), m=>`<mark>${m}</mark>`);
-}
-function emoji(name) { return name.split(' ')[0]; }
-function cleanName(name) { return name.replace(/^.+?\s/,''); }
-
-// ══════════════════════════════════════
-// FRONT-END: HOME
-// ══════════════════════════════════════
-function renderHome() {
-  currentCatId = null;
-  setTitle('問題類別');
-  renderCategoryGrid();
-  bindSearch();
-  if(searchQuery) renderSearch(searchQuery);
-}
-
-function setTitle(t) {
-  const el = document.getElementById('sectionTitle');
-  if(el) el.textContent = t;
-}
-
-function renderCategoryGrid() {
-  const app = document.getElementById('app');
-  // Bento-style: mix of spans
-  const spans = [2,1,1,1,2,1,1,1,2,1];
-  app.innerHTML = `<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-    ${CATEGORIES.map((cat, i) => categoryCardHTML(cat, spans[i]||1, i)).join('')}
-  </div>`;
-}
-
-function categoryCardHTML(cat, span, i) {
-  const isFeatured = span === 2;
-  const delay = `fade-up-${Math.min(i+1,10)}`;
-  if(isFeatured) {
-    return `
-    <div class="md:col-span-2 group bg-surface-container-lowest rounded-2xl p-7 hover:bg-white tonal-shadow-sm ghost-border cursor-pointer fade-up ${delay} transition-all duration-300"
-      onclick="renderCategory('${cat.id}')">
-      <div class="flex justify-between items-start mb-10">
-        <div class="w-12 h-12 bg-surface-container-low rounded-xl flex items-center justify-center text-2xl">${emoji(cat.name)}</div>
-        <span class="bg-primary-fixed text-on-primary-fixed-variant text-[9px] font-bold uppercase tracking-widest px-3 py-1 rounded-full font-label">${cat.replies.length} 則回覆</span>
-      </div>
-      <h3 class="text-xl font-bold text-primary font-headline mb-2">${esc(cleanName(cat.name))}</h3>
-      <p class="text-on-surface-variant text-sm font-body mb-6">${esc(cat.description)}</p>
-      <div class="flex items-center gap-2 text-primary font-bold text-sm group-hover:gap-4 transition-all font-label">
-        <span>查看回覆</span>
-        <span class="material-symbols-outlined text-[18px]">chevron_right</span>
-      </div>
-    </div>`;
-  }
-  return `
-  <div class="group bg-surface-container-lowest rounded-2xl p-7 hover:bg-white tonal-shadow-sm ghost-border cursor-pointer fade-up ${delay} transition-all duration-300"
-    onclick="renderCategory('${cat.id}')">
-    <div class="text-2xl mb-8 w-11 h-11 bg-surface-container-low rounded-xl flex items-center justify-center">${emoji(cat.name)}</div>
-    <h3 class="text-lg font-bold text-primary font-headline mb-1.5">${esc(cleanName(cat.name))}</h3>
-    <p class="text-on-surface-variant text-xs font-body mb-5 line-clamp-2">${esc(cat.description)}</p>
-    <span class="text-primary font-bold text-xs font-label">${cat.replies.length} 則回覆</span>
-  </div>`;
-}
-
-// ══════════════════════════════════════
-// FRONT-END: CATEGORY VIEW
-// ══════════════════════════════════════
-function renderCategory(catId) {
-  const cat = CATEGORIES.find(c=>c.id===catId);
-  if(!cat) return;
-  currentCatId = catId; searchQuery = '';
-  document.getElementById('searchInput').value = '';
-  document.getElementById('searchClear').classList.add('hidden');
-
-  setTitle(cat.name);
-  document.getElementById('app').innerHTML = `
-    <button onclick="renderHome()" class="flex items-center gap-2 text-sm font-semibold text-on-surface-variant hover:text-primary font-label mb-6 fade-up">
-      <span class="material-symbols-outlined text-[18px]">arrow_back</span>返回類別
-    </button>
-    <!-- Category header — tonal block, no border -->
-    <div class="cta-gradient rounded-3xl p-7 mb-7 flex items-center gap-5 tonal-shadow-md fade-up">
-      <div class="w-14 h-14 bg-white/15 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0 backdrop-blur-sm">${emoji(cat.name)}</div>
-      <div class="flex-1 min-w-0">
-        <h2 class="text-xl font-bold text-white font-headline">${esc(cleanName(cat.name))}</h2>
-        <p class="text-on-primary-container/70 text-sm font-body mt-0.5">${esc(cat.description)}</p>
-      </div>
-      <span class="bg-white/20 text-white text-xs font-bold px-4 py-2 rounded-full font-label flex-shrink-0">${cat.replies.length} 則</span>
-    </div>
-    <div class="space-y-3">
-      ${cat.replies.map((r,i)=>replyCardHTML(r,'',i)).join('')}
-    </div>`;
-}
-
-function replyCardHTML(r, q, i) {
-  const delay = `fade-up-${Math.min(i+1,10)}`;
-  return `
-  <div class="reply-card rounded-2xl p-6 ghost-border tonal-shadow-sm fade-up ${delay}">
-    <span class="inline-block bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full font-label mb-4">${esc(r.title)}</span>
-    <p class="text-on-surface text-sm font-body leading-relaxed whitespace-pre-wrap mb-5">${hl(r.body, q)}</p>
-    <div class="flex justify-end">
-      <button class="copy-btn flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-xl text-xs font-bold font-label uppercase tracking-wider hover:bg-primary-container tonal-shadow-sm"
-        onclick="copyReply(this,${JSON.stringify(r.body)})">
-        <span class="material-symbols-outlined text-[16px]">content_copy</span>複製此回覆
-      </button>
-    </div>
-  </div>`;
-}
-
-function copyReply(btn, text) {
-  const done = () => {
-    btn.innerHTML = `<span class="material-symbols-outlined text-[16px]" style="font-variation-settings:'FILL' 1">check_circle</span>已複製！`;
-    btn.classList.add('bg-[#27ae60]'); btn.classList.remove('bg-primary');
-    setTimeout(()=>{
-      btn.innerHTML = `<span class="material-symbols-outlined text-[16px]">content_copy</span>複製此回覆`;
-      btn.classList.remove('bg-[#27ae60]'); btn.classList.add('bg-primary');
-    }, 2000);
-  };
-  navigator.clipboard ? navigator.clipboard.writeText(text).then(done).catch(done)
-    : (()=>{ const ta=Object.assign(document.createElement('textarea'),{value:text,style:'position:fixed;opacity:0'}); document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done(); })();
-}
-
-// ══════════════════════════════════════
-// SEARCH
-// ══════════════════════════════════════
-function bindSearch() {
-  const input = document.getElementById('searchInput');
-  const clear = document.getElementById('searchClear');
-  if(!input) return;
-  input.addEventListener('input', ()=>{
-    searchQuery = input.value.trim();
-    clear.classList.toggle('hidden', !searchQuery);
-    searchQuery ? renderSearch(searchQuery) : (() => { renderCategoryGrid(); setTitle('問題類別'); })();
-  });
-}
-
-function clearSearch() {
-  searchQuery = '';
-  document.getElementById('searchInput').value = '';
-  document.getElementById('searchClear').classList.add('hidden');
-  renderCategoryGrid(); setTitle('問題類別');
-  document.getElementById('searchInput').focus();
-}
-
-function quickSearch(kw) {
-  searchQuery = kw;
-  document.getElementById('searchInput').value = kw;
-  document.getElementById('searchClear').classList.remove('hidden');
-  renderSearch(kw);
-}
-
-function renderSearch(query) {
-  const q = query.toLowerCase();
-  const results = CATEGORIES.map(cat => {
-    const catMatch = cat.name.toLowerCase().includes(q) || cat.description.toLowerCase().includes(q);
-    const replies = catMatch ? cat.replies : cat.replies.filter(r=>r.title.toLowerCase().includes(q)||r.body.toLowerCase().includes(q));
-    return replies.length ? {cat, replies} : null;
-  }).filter(Boolean);
-
-  setTitle(results.length ? `找到 ${results.length} 個類別` : '搜尋結果');
-
-  const app = document.getElementById('app');
-  if(!results.length) {
-    app.innerHTML = `
-      <div class="text-center py-16 fade-up">
-        <span class="material-symbols-outlined text-5xl text-on-surface-variant/20 block mb-4">search_off</span>
-        <h3 class="font-headline font-bold text-primary text-base mb-1">找不到「${esc(query)}」的相關回覆</h3>
-        <p class="text-on-surface-variant text-sm font-body">請嘗試其他關鍵字</p>
-      </div>`;
-    return;
-  }
-
-  app.innerHTML = `<div class="space-y-3">
-    ${results.map((item, gi) => `
-    <div class="bg-surface-container-lowest rounded-2xl ghost-border tonal-shadow-sm overflow-hidden fade-up fade-up-${Math.min(gi+1,10)}" id="sg-${gi}">
-      <button class="w-full flex items-center gap-3 px-6 py-4 hover:bg-surface-container-low text-left"
-        onclick="document.getElementById('sg-${gi}').classList.toggle('open')">
-        <span class="text-xl w-9 h-9 bg-surface-container-low rounded-xl flex items-center justify-center flex-shrink-0">${emoji(item.cat.name)}</span>
-        <span class="flex-1 font-bold text-primary font-headline text-sm">${hl(cleanName(item.cat.name), query)}</span>
-        <span class="bg-primary-fixed text-on-primary-fixed-variant text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full font-label">符合 ${item.replies.length} 則</span>
-        <span class="material-symbols-outlined text-on-surface-variant/50 text-sm search-arrow transition-transform duration-200">expand_more</span>
-      </button>
-      <div class="search-replies hidden border-t border-outline-variant/10 p-4 space-y-3 bg-surface-container-low">
-        ${item.replies.map((r,i)=>replyCardHTML(r,query,i)).join('')}
-      </div>
-    </div>`).join('')}
-  </div>`;
-
-  // Toggle logic
-  document.querySelectorAll('[id^="sg-"]').forEach(group => {
-    group.classList.contains('open') ? showGroup(group) : null;
-    const obs = new MutationObserver(()=>{
-      const open = group.classList.contains('open');
-      group.querySelector('.search-replies').classList.toggle('hidden', !open);
-      const arrow = group.querySelector('.search-arrow');
-      if(arrow) arrow.style.transform = open ? 'rotate(180deg)' : '';
-    });
-    obs.observe(group, {attributes: true, attributeFilter: ['class']});
-  });
-}
-
-function showGroup(g) {
-  g.querySelector('.search-replies').classList.remove('hidden');
-}
-
-// ══════════════════════════════════════
-// ADMIN CMS
-// ══════════════════════════════════════
-function buildCatOptions(sel, selectedId) {
-  sel.innerHTML = CATEGORIES.map(c=>`<option value="${c.id}"${c.id===selectedId?' selected':''}>${c.name}</option>`).join('');
-}
-
-function renderAdminList() {
-  const sel = document.getElementById('adminCatSelect');
-  if(!sel.innerHTML) buildCatOptions(sel, CATEGORIES[0]?.id);
-  const cat = CATEGORIES.find(c=>c.id===sel.value);
-  const list = document.getElementById('adminList');
-  if(!cat) { list.innerHTML=''; return; }
-  if(!cat.replies.length) {
-    list.innerHTML=`<div class="text-center py-12 fade-up"><span class="material-symbols-outlined text-4xl text-on-surface-variant/20 block mb-3">inbox</span><h3 class="font-headline font-bold text-primary text-base mb-1">這個類別還沒有回覆</h3><p class="text-on-surface-variant text-sm">點擊「新增回覆」開始建立</p></div>`;
-    return;
-  }
-  list.innerHTML = cat.replies.map((r,i)=>`
-    <div class="admin-item bg-surface-container-lowest rounded-2xl p-5 ghost-border tonal-shadow-sm mb-3 flex gap-4 items-start fade-up cursor-grab active:cursor-grabbing"
-      draggable="true"
-      ondragstart="dragStart(event,'${cat.id}',${i})"
-      ondragover="dragOver(event)"
-      ondrop="dragDrop(event,'${cat.id}',${i})"
-      ondragend="dragEnd()">
-      <span class="material-symbols-outlined text-on-surface-variant/30 pt-0.5 flex-shrink-0 text-xl">drag_indicator</span>
-      <div class="flex-1 min-w-0">
-        <span class="inline-block bg-primary-fixed text-on-primary-fixed-variant text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full font-label mb-2">${esc(r.title)}</span>
-        <p class="text-on-surface-variant text-xs font-body line-clamp-2 leading-relaxed">${esc(r.body)}</p>
-      </div>
-      <div class="flex gap-2 flex-shrink-0">
-        <button onclick="openEditModal('${cat.id}',${i})" class="px-3 py-2 rounded-xl text-xs font-semibold font-label text-on-surface-variant hover:bg-surface-container flex items-center gap-1">
-          <span class="material-symbols-outlined text-[14px]">edit</span>編輯
-        </button>
-        <button onclick="confirmDelete('${cat.id}',${i})" class="px-3 py-2 rounded-xl text-xs font-semibold font-label text-error hover:bg-red-50 flex items-center gap-1">
-          <span class="material-symbols-outlined text-[14px]">delete</span>刪除
-        </button>
-      </div>
-    </div>`).join('');
-}
-
-// Drag
-let dragSrcCat=null, dragSrcIdx=null;
-function dragStart(e,catId,idx){ dragSrcCat=catId; dragSrcIdx=idx; e.currentTarget.classList.add('opacity-40'); }
-function dragOver(e){ e.preventDefault(); document.querySelectorAll('.admin-item').forEach(el=>el.classList.remove('ring-2','ring-secondary-container')); e.currentTarget.classList.add('ring-2','ring-secondary-container'); }
-function dragDrop(e,catId,idx){
-  e.preventDefault();
-  if(dragSrcCat!==catId||dragSrcIdx===idx){ dragEnd(); return; }
-  const cat=CATEGORIES.find(c=>c.id===catId);
-  const [m]=cat.replies.splice(dragSrcIdx,1); cat.replies.splice(idx,0,m);
-  renderAdminList();
-  syncReorder(catId);
-}
-function dragEnd(){ document.querySelectorAll('.admin-item').forEach(el=>{ el.classList.remove('opacity-40','ring-2','ring-secondary-container'); }); }
-
-// Modal
-let editCatId=null, editIdx=null;
-function openAddModal(){
-  editCatId=null; editIdx=null;
-  document.getElementById('modalTitle').textContent='新增回覆';
-  buildCatOptions(document.getElementById('modalCat'), document.getElementById('adminCatSelect').value);
-  document.getElementById('modalTitleInput').value='';
-  document.getElementById('modalBody').value='';
-  showModal('replyModal');
-}
-function openEditModal(catId,idx){
-  editCatId=catId; editIdx=idx;
-  const r=CATEGORIES.find(c=>c.id===catId).replies[idx];
-  document.getElementById('modalTitle').textContent='編輯回覆';
-  buildCatOptions(document.getElementById('modalCat'),catId);
-  document.getElementById('modalTitleInput').value=r.title;
-  document.getElementById('modalBody').value=r.body;
-  showModal('replyModal');
-}
-function closeModal(){ hideModal('replyModal'); }
-function showModal(id){ const el=document.getElementById(id); el.classList.remove('hidden'); el.classList.add('flex'); }
-function hideModal(id){ const el=document.getElementById(id); el.classList.add('hidden'); el.classList.remove('flex'); }
-
-async function saveReply(){
-  const catId=document.getElementById('modalCat').value;
-  const title=document.getElementById('modalTitleInput').value.trim();
-  const body=document.getElementById('modalBody').value.trim();
-  if(!title){ showToast('請填寫情境標題',true); return; }
-  if(!body){ showToast('請填寫回覆內文',true); return; }
-
-  const cat=CATEGORIES.find(c=>c.id===catId);
-  let replyObj;
-
-  if(editIdx!==null&&editCatId!==null){
-    const old=CATEGORIES.find(c=>c.id===editCatId);
-    const [r]=old.replies.splice(editIdx,1);
-    replyObj={id:r.id,title,body};
-    cat.replies.push(replyObj);
-  } else {
-    replyObj={id:`reply-${catId.replace('cat-','')}-${Date.now().toString().slice(-4)}`,title,body};
-    cat.replies.push(replyObj);
-  }
-
-  closeModal();
-  if(currentCatId===catId) renderCategory(catId);
-  buildCatOptions(document.getElementById('adminCatSelect'),catId);
-  document.getElementById('adminCatSelect').value=catId;
-  renderAdminList();
-  showToast('儲存中…');
-
-  try {
-    await fetch(SHEETS_API, {
-      method:'POST', body: JSON.stringify({action:'upsert', category_id:catId, reply:replyObj})
-    });
-    showToast(editIdx!==null?'✅ 回覆已更新並儲存':'✅ 回覆已新增並儲存');
-  } catch(e){ showToast('⚠️ 本地已更新，但 Sheets 同步失敗',true); }
-}
-
-// Delete
-let pendingDelCat=null, pendingDelIdx=null;
-function confirmDelete(catId,idx){
-  pendingDelCat=catId; pendingDelIdx=idx;
-  const cat=CATEGORIES.find(c=>c.id===catId);
-  document.getElementById('confirmDesc').textContent=`確定要刪除「${cat.replies[idx].title}」嗎？此操作無法復原。`;
-  showModal('confirmOverlay');
-  document.getElementById('confirmOkBtn').onclick = async ()=>{
-    const cat=CATEGORIES.find(c=>c.id===pendingDelCat);
-    const [deleted]=cat.replies.splice(pendingDelIdx,1);
-    hideModal('confirmOverlay'); renderAdminList(); showToast('刪除中…');
-    try {
-      await fetch(SHEETS_API, {
-        method:'POST', body: JSON.stringify({action:'delete', category_id:pendingDelCat, reply:{id:deleted.id}})
-      });
-      showToast('🗑️ 回覆已刪除並同步');
-    } catch(e){ showToast('⚠️ 本地已刪除，但 Sheets 同步失敗',true); }
-  };
-}
-function closeConfirm(){ hideModal('confirmOverlay'); }
-
-// Reorder sync (called after drag drop)
-async function syncReorder(catId){
-  const cat=CATEGORIES.find(c=>c.id===catId);
-  try {
-    await fetch(SHEETS_API, {
-      method:'POST', body: JSON.stringify({action:'reorder', category_id:catId, replies:cat.replies})
-    });
-    showToast('✅ 順序已同步');
-  } catch(e){ showToast('⚠️ 本地已更新，但 Sheets 同步失敗',true); }
-}
-
-// Toast
-let toastTimer;
-function showToast(msg, isError=false){
-  const el=document.getElementById('toast');
-  el.textContent=msg;
-  el.className=`fixed bottom-7 left-1/2 -translate-x-1/2 z-[999] text-white px-6 py-3 rounded-full text-sm font-semibold font-label tonal-shadow-xl transition-all duration-300 ${isError?'bg-error':'cta-gradient'}`;
-  el.style.opacity='1'; el.style.transform='translateX(-50%) translateY(0)';
-  clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(-50%) translateY(8px)'; },2500);
-}
-
-// Close modals on backdrop click
-['replyModal','confirmOverlay'].forEach(id=>{
-  document.getElementById(id).addEventListener('click',e=>{ if(e.target===e.currentTarget){ id==='replyModal'?closeModal():closeConfirm(); } });
-});
-
-// ══════════════════════════════════════
-// LOOKER STUDIO URL 管理
-// ══════════════════════════════════════
-const DEFAULT_LOOKER_URL = 'https://lookerstudio.google.com/embed/reporting/634f8f09-ecf7-4699-82c7-7c77a9ad78ea/page/p_myealqpprd';
 
 function initLookerUrl() {
   const saved = localStorage.getItem('lookerUrl') || DEFAULT_LOOKER_URL;
@@ -929,6 +1001,213 @@ function initLookerUrl() {
   if (input) input.value = saved;
 }
 
+function updateTopbarCount() {
+  const el = document.getElementById('topbarCount');
+  if (!el) return;
+  const total = CATEGORIES.reduce((s, c) => s + c.replies.length, 0);
+  el.textContent = CATEGORIES.length + ' 個類別 · ' + total + ' 則範本';
+}
+
+// ══════════════════════════════════════
+// TAB
+// ══════════════════════════════════════
+let activeTab = 'replies';
+
+function switchTab(tabId) {
+  activeTab = tabId;
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById('tab-' + tabId);
+  if (panel) panel.classList.add('active');
+
+  document.querySelectorAll('.sidebar-item[data-tab]').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === tabId);
+  });
+
+  const titles = { replies:'回覆範本', status:'機台狀態', ai:'AI 助手', admin:'管理後台' };
+  document.getElementById('topbarTitle').textContent = titles[tabId] || '';
+
+  const countEl = document.getElementById('topbarCount');
+  if (tabId !== 'replies') { countEl.textContent = ''; }
+  else { updateTopbarCount(); }
+
+  if (tabId === 'admin') {
+    renderAdminList();
+    const input = document.getElementById('lookerUrlInput');
+    if (input) input.value = localStorage.getItem('lookerUrl') || DEFAULT_LOOKER_URL;
+  }
+}
+
+// ══════════════════════════════════════
+// ADMIN UNLOCK
+// ══════════════════════════════════════
+let adminUnlocked = false;
+function enterAdmin() {
+  if (!adminUnlocked) {
+    adminUnlocked = true;
+    document.getElementById('adminSideItem').setAttribute('data-tab', 'admin');
+    document.getElementById('adminSideItem').style.color = 'rgba(255,255,255,.55)';
+  }
+  switchTab('admin');
+}
+
+// ══════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════
+let currentCatId = null, searchQuery = '';
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function hl(text, q) {
+  if (!q) return esc(text);
+  return esc(text).replace(new RegExp(q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'), m => `<mark>${m}</mark>`);
+}
+function emoji(name) { return name.split(' ')[0]; }
+function cleanName(name) { return name.replace(/^.+?\s/,''); }
+function setTopbarTitle(t) { document.getElementById('topbarTitle').textContent = t; }
+
+// ══════════════════════════════════════
+// CATEGORY GRID
+// ══════════════════════════════════════
+function renderHome() {
+  currentCatId = null;
+  updateTopbarCount();
+  const app = document.getElementById('app');
+  app.innerHTML = `<div class="cat-grid">${CATEGORIES.map((cat, i) => catCardHTML(cat, i)).join('')}</div>`;
+}
+
+function catCardHTML(cat, i) {
+  const delay = ['d1','d2','d3','d4','d5','d6','d7','d8'][i] || '';
+  return `
+  <div class="cat-card fade-up ${delay}" onclick="renderCategory('${cat.id}')">
+    <span class="cat-card-emoji">${emoji(cat.name)}</span>
+    <div class="cat-card-name">${esc(cleanName(cat.name))}</div>
+    <div class="cat-card-desc">${esc(cat.description)}</div>
+    <div class="cat-card-footer">
+      <span class="cat-card-count">${cat.replies.length} 則回覆</span>
+      <span class="material-symbols-outlined cat-card-arrow">arrow_forward</span>
+    </div>
+  </div>`;
+}
+
+// ══════════════════════════════════════
+// CATEGORY VIEW
+// ══════════════════════════════════════
+function renderCategory(catId) {
+  const cat = CATEGORIES.find(c => c.id === catId);
+  if (!cat) return;
+  currentCatId = catId; searchQuery = '';
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchClear').classList.remove('visible');
+  setTopbarTitle(cleanName(cat.name));
+
+  document.getElementById('app').innerHTML = `
+    <button class="section-head-back fade-up" onclick="renderHome()">
+      <span class="material-symbols-outlined">arrow_back</span>返回類別
+    </button>
+    <div class="cat-header fade-up d1">
+      <div class="cat-header-emoji">${emoji(cat.name)}</div>
+      <div>
+        <div class="cat-header-name">${esc(cleanName(cat.name))}</div>
+        <div class="cat-header-desc">${esc(cat.description)}</div>
+      </div>
+      <span class="cat-header-badge">${cat.replies.length} 則</span>
+    </div>
+    <div class="reply-list">
+      ${cat.replies.map((r, i) => replyCardHTML(r, '', i)).join('')}
+    </div>`;
+}
+
+// ══════════════════════════════════════
+// REPLY CARD
+// ══════════════════════════════════════
+function replyCardHTML(r, q, i) {
+  const delay = ['d1','d2','d3','d4','d5','d6','d7','d8'][i] || '';
+  return `
+  <div class="reply-card fade-up ${delay}">
+    <span class="reply-card-tag">${esc(r.title)}</span>
+    <div class="reply-card-body">${hl(r.body, q)}</div>
+    <div class="reply-card-footer">
+      <button class="copy-btn" onclick="copyReply(this,${JSON.stringify(r.body)})">
+        <span class="material-symbols-outlined">content_copy</span>複製此回覆
+      </button>
+    </div>
+  </div>`;
+}
+
+function copyReply(btn, text) {
+  const done = () => {
+    btn.classList.add('copied');
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings:\'FILL\' 1">check_circle</span>已複製！';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<span class="material-symbols-outlined">content_copy</span>複製此回覆';
+    }, 2000);
+  };
+  navigator.clipboard ? navigator.clipboard.writeText(text).then(done).catch(done)
+    : (() => { const ta = Object.assign(document.createElement('textarea'), {value:text,style:'position:fixed;opacity:0'}); document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done(); })();
+}
+
+// ══════════════════════════════════════
+// SEARCH
+// ══════════════════════════════════════
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  searchQuery = e.target.value.trim();
+  document.getElementById('searchClear').classList.toggle('visible', !!searchQuery);
+  searchQuery ? renderSearch(searchQuery) : (() => { renderHome(); updateTopbarCount(); })();
+});
+
+function clearSearch() {
+  searchQuery = '';
+  document.getElementById('searchInput').value = '';
+  document.getElementById('searchClear').classList.remove('visible');
+  renderHome(); updateTopbarCount();
+  document.getElementById('searchInput').focus();
+}
+
+function quickSearch(kw) {
+  searchQuery = kw;
+  document.getElementById('searchInput').value = kw;
+  document.getElementById('searchClear').classList.add('visible');
+  renderSearch(kw);
+}
+
+function renderSearch(query) {
+  const q = query.toLowerCase();
+  const results = CATEGORIES.map(cat => {
+    const catMatch = cat.name.toLowerCase().includes(q) || cat.description.toLowerCase().includes(q);
+    const replies = catMatch ? cat.replies : cat.replies.filter(r => r.title.toLowerCase().includes(q) || r.body.toLowerCase().includes(q));
+    return replies.length ? { cat, replies } : null;
+  }).filter(Boolean);
+
+  setTopbarTitle('搜尋結果');
+  document.getElementById('topbarCount').textContent = results.length ? '找到 ' + results.length + ' 個類別' : '';
+  const app = document.getElementById('app');
+
+  if (!results.length) {
+    app.innerHTML = `
+      <div class="loading-wrap fade-up">
+        <span class="material-symbols-outlined empty-icon">search_off</span>
+        <div style="font-size:13px;font-weight:700;color:var(--blue)">找不到「${esc(query)}」的相關回覆</div>
+        <div class="empty-text">請嘗試其他關鍵字</div>
+      </div>`;
+    return;
+  }
+
+  app.innerHTML = results.map((item, gi) => `
+    <div class="search-group fade-up" id="sg-${gi}">
+      <button class="search-group-head" onclick="document.getElementById('sg-${gi}').classList.toggle('open')">
+        <span class="search-group-emoji">${emoji(item.cat.name)}</span>
+        <span class="search-group-name">${hl(cleanName(item.cat.name), query)}</span>
+        <span class="search-group-count">${item.replies.length} 則</span>
+        <span class="material-symbols-outlined search-group-arrow">expand_more</span>
+      </button>
+      <div class="search-group-body reply-list">
+        ${item.replies.map((r, i) => replyCardHTML(r, query, i)).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════
+// LOOKER
+// ══════════════════════════════════════
 function saveLookerUrl() {
   const input = document.getElementById('lookerUrlInput');
   const url = input.value.trim();
@@ -941,9 +1220,8 @@ function saveLookerUrl() {
   showToast('✅ 報表網址已更新');
 }
 
-
 // ══════════════════════════════════════
-// AI 留言分類助手
+// AI ASSISTANT
 // ══════════════════════════════════════
 let aiResultCatId = null;
 
@@ -951,92 +1229,76 @@ async function classifyMessage() {
   const input = document.getElementById('aiInput').value.trim();
   if (!input) { showToast('請輸入用戶留言', true); return; }
 
-  // Show loading
-  document.getElementById('aiResult').classList.add('hidden');
-  document.getElementById('aiError').classList.add('hidden');
-  document.getElementById('aiLoading').classList.remove('hidden');
+  document.getElementById('aiResult').style.display = 'none';
+  document.getElementById('aiError').style.display = 'none';
+  document.getElementById('aiLoading').style.display = 'flex';
   const btn = document.getElementById('aiBtn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">autorenew</span>AI 分析中…';
+  btn.innerHTML = '<span class="material-symbols-outlined spin-icon">autorenew</span>AI 分析中…';
 
   try {
     const data = await jsonp(SHEETS_API + '?action=classify&message=' + encodeURIComponent(input));
-
-    document.getElementById('aiLoading').classList.add('hidden');
-
+    document.getElementById('aiLoading').style.display = 'none';
     if (!data || !data.category_id) throw new Error('無法判斷類別，請再試一次');
 
     aiResultCatId = data.category_id;
-
-    // 填入分類結果
     const cat = CATEGORIES.find(c => c.id === data.category_id);
     document.getElementById('aiCatEmoji').textContent = cat ? emoji(cat.name) : '🤖';
     document.getElementById('aiCatName').textContent = data.category_name || '';
     document.getElementById('aiReason').textContent = data.reason || '';
 
-    const confidenceMap = { high: '高信心', medium: '中信心', low: '低信心' };
-    const confidenceColor = { high: 'bg-white/25', medium: 'bg-white/15', low: 'bg-white/10' };
-    const conf = data.confidence || 'medium';
+    const confMap = { high:'高信心', medium:'中信心', low:'低信心' };
     const confEl = document.getElementById('aiConfidence');
-    confEl.textContent = confidenceMap[conf] || conf;
-    confEl.className = `flex-shrink-0 ${confidenceColor[conf]||'bg-white/15'} text-white text-[10px] font-bold px-3 py-1.5 rounded-full font-label uppercase tracking-wider`;
+    const conf = data.confidence || 'medium';
+    confEl.textContent = confMap[conf] || conf;
+    confEl.className = 'ai-confidence ' + conf;
 
-    // 填入推薦回覆 or AI 生成回覆
     const repliesEl = document.getElementById('aiReplies');
     const labelEl = document.getElementById('aiRepliesLabel');
 
     if (data.generated_reply && data.replies && data.replies.length > 0) {
-      // 有範本 + 有 AI 生成：兩個都顯示
       labelEl.textContent = '推薦回覆範本';
       repliesEl.innerHTML = data.replies.map((r, i) => replyCardHTML(r, '', i)).join('') + `
-        <div class="reply-card rounded-2xl p-6 ghost-border tonal-shadow-sm fade-up border-l-4 border-secondary-container mt-2">
-          <div class="flex items-center gap-2 mb-4">
-            <span class="inline-block bg-secondary-container text-on-secondary-container text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full font-label">✨ AI 針對性草稿</span>
-            <span class="text-on-surface-variant/50 text-[10px] font-body">請確認內容後再使用</span>
-          </div>
-          <p class="text-on-surface text-sm font-body leading-relaxed whitespace-pre-wrap mb-5">${esc(data.generated_reply)}</p>
-          <div class="flex justify-end">
-            <button class="copy-btn flex items-center gap-2 bg-secondary text-white px-5 py-2.5 rounded-xl text-xs font-bold font-label uppercase tracking-wider hover:opacity-90 tonal-shadow-sm"
-              onclick="copyReply(this,${JSON.stringify(data.generated_reply)})">
-              <span class="material-symbols-outlined text-[16px]">content_copy</span>複製草稿
+        <div class="ai-draft-card fade-up">
+          <span class="ai-draft-tag">✨ AI 針對性草稿</span>
+          <div class="ai-draft-note">請確認內容後再使用</div>
+          <div class="ai-draft-body">${esc(data.generated_reply)}</div>
+          <div class="ai-draft-footer">
+            <button class="draft-copy-btn" onclick="copyReply(this,${JSON.stringify(data.generated_reply)})">
+              <span class="material-symbols-outlined" style="font-size:14px">content_copy</span>複製草稿
             </button>
           </div>
         </div>`;
     } else if (data.replies && data.replies.length > 0) {
-      // 只有範本
       labelEl.textContent = '推薦回覆範本';
       repliesEl.innerHTML = data.replies.map((r, i) => replyCardHTML(r, '', i)).join('');
     } else if (data.generated_reply) {
-      // 只有 AI 生成
       labelEl.textContent = 'AI 生成回覆';
       repliesEl.innerHTML = `
-        <div class="reply-card rounded-2xl p-6 ghost-border tonal-shadow-sm fade-up border-l-4 border-secondary-container">
-          <div class="flex items-center gap-2 mb-4">
-            <span class="inline-block bg-secondary-container text-on-secondary-container text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full font-label">✨ AI 生成草稿</span>
-            <span class="text-on-surface-variant/50 text-[10px] font-body">請確認內容後再使用</span>
-          </div>
-          <p class="text-on-surface text-sm font-body leading-relaxed whitespace-pre-wrap mb-5">${esc(data.generated_reply)}</p>
-          <div class="flex justify-end">
-            <button class="copy-btn flex items-center gap-2 bg-secondary text-white px-5 py-2.5 rounded-xl text-xs font-bold font-label uppercase tracking-wider hover:opacity-90 tonal-shadow-sm"
-              onclick="copyReply(this,${JSON.stringify(data.generated_reply)})">
-              <span class="material-symbols-outlined text-[16px]">content_copy</span>複製草稿
+        <div class="ai-draft-card fade-up">
+          <span class="ai-draft-tag">✨ AI 生成草稿</span>
+          <div class="ai-draft-note">請確認內容後再使用</div>
+          <div class="ai-draft-body">${esc(data.generated_reply)}</div>
+          <div class="ai-draft-footer">
+            <button class="draft-copy-btn" onclick="copyReply(this,${JSON.stringify(data.generated_reply)})">
+              <span class="material-symbols-outlined" style="font-size:14px">content_copy</span>複製草稿
             </button>
           </div>
         </div>`;
     } else {
       labelEl.textContent = '推薦回覆範本';
-      repliesEl.innerHTML = `<p class="text-on-surface-variant text-sm font-body text-center py-6">此類別目前沒有回覆範本</p>`;
+      repliesEl.innerHTML = `<div class="empty-text" style="padding:20px 0">此類別目前沒有回覆範本</div>`;
     }
 
-    document.getElementById('aiResult').classList.remove('hidden');
+    document.getElementById('aiResult').style.display = 'block';
 
   } catch(err) {
-    document.getElementById('aiLoading').classList.add('hidden');
+    document.getElementById('aiLoading').style.display = 'none';
     document.getElementById('aiErrorMsg').textContent = err.message || '發生錯誤，請稍後再試';
-    document.getElementById('aiError').classList.remove('hidden');
+    document.getElementById('aiError').style.display = 'block';
   } finally {
     btn.disabled = false;
-    btn.innerHTML = '<span class="material-symbols-outlined text-[16px]">auto_awesome</span>自動分類';
+    btn.innerHTML = '<span class="material-symbols-outlined">auto_awesome</span>自動分類';
   }
 }
 
@@ -1046,15 +1308,165 @@ function viewAllFromAI() {
   renderCategory(aiResultCatId);
 }
 
-// Enter 鍵觸發分類
 document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && e.ctrlKey && document.getElementById('tab-ai').classList.contains('active')) {
-    classifyMessage();
-  }
+  if (e.key === 'Enter' && e.ctrlKey && activeTab === 'ai') classifyMessage();
 });
 
 // ══════════════════════════════════════
-// INIT
+// ADMIN CMS
+// ══════════════════════════════════════
+function buildCatOptions(sel, selectedId) {
+  sel.innerHTML = CATEGORIES.map(c => `<option value="${c.id}"${c.id===selectedId?' selected':''}>${c.name}</option>`).join('');
+}
+
+function renderAdminList() {
+  const sel = document.getElementById('adminCatSelect');
+  if (!sel.innerHTML) buildCatOptions(sel, CATEGORIES[0]?.id);
+  const cat = CATEGORIES.find(c => c.id === sel.value);
+  const list = document.getElementById('adminList');
+  if (!cat) { list.innerHTML = ''; return; }
+  if (!cat.replies.length) {
+    list.innerHTML = `<div class="loading-wrap fade-up"><span class="material-symbols-outlined empty-icon">inbox</span><div style="font-size:13px;font-weight:700;color:var(--blue)">這個類別還沒有回覆</div><div class="empty-text">點擊「新增回覆」開始建立</div></div>`;
+    return;
+  }
+  list.innerHTML = cat.replies.map((r, i) => `
+    <div class="admin-item fade-up" draggable="true"
+      ondragstart="dragStart(event,'${cat.id}',${i})"
+      ondragover="dragOver(event)"
+      ondrop="dragDrop(event,'${cat.id}',${i})"
+      ondragend="dragEnd()">
+      <span class="material-symbols-outlined admin-item-drag">drag_indicator</span>
+      <div class="admin-item-body">
+        <span class="admin-item-tag">${esc(r.title)}</span>
+        <div class="admin-item-preview">${esc(r.body)}</div>
+      </div>
+      <div class="admin-item-actions">
+        <button class="edit-btn" onclick="openEditModal('${cat.id}',${i})">
+          <span class="material-symbols-outlined">edit</span>編輯
+        </button>
+        <button class="del-btn" onclick="confirmDelete('${cat.id}',${i})">
+          <span class="material-symbols-outlined">delete</span>刪除
+        </button>
+      </div>
+    </div>`).join('');
+}
+
+// Drag
+let dragSrcCat = null, dragSrcIdx = null;
+function dragStart(e, catId, idx) { dragSrcCat = catId; dragSrcIdx = idx; e.currentTarget.style.opacity = '.4'; }
+function dragOver(e) {
+  e.preventDefault();
+  document.querySelectorAll('.admin-item').forEach(el => el.style.outline = '');
+  e.currentTarget.style.outline = '2px solid var(--blue)';
+}
+function dragDrop(e, catId, idx) {
+  e.preventDefault();
+  if (dragSrcCat !== catId || dragSrcIdx === idx) { dragEnd(); return; }
+  const cat = CATEGORIES.find(c => c.id === catId);
+  const [m] = cat.replies.splice(dragSrcIdx, 1); cat.replies.splice(idx, 0, m);
+  renderAdminList(); syncReorder(catId);
+}
+function dragEnd() { document.querySelectorAll('.admin-item').forEach(el => { el.style.opacity = ''; el.style.outline = ''; }); }
+
+// Modal
+let editCatId = null, editIdx = null;
+function openAddModal() {
+  editCatId = null; editIdx = null;
+  document.getElementById('modalTitle').textContent = '新增回覆';
+  buildCatOptions(document.getElementById('modalCat'), document.getElementById('adminCatSelect').value);
+  document.getElementById('modalTitleInput').value = '';
+  document.getElementById('modalBody').value = '';
+  document.getElementById('replyModal').classList.add('open');
+}
+function openEditModal(catId, idx) {
+  editCatId = catId; editIdx = idx;
+  const r = CATEGORIES.find(c => c.id === catId).replies[idx];
+  document.getElementById('modalTitle').textContent = '編輯回覆';
+  buildCatOptions(document.getElementById('modalCat'), catId);
+  document.getElementById('modalTitleInput').value = r.title;
+  document.getElementById('modalBody').value = r.body;
+  document.getElementById('replyModal').classList.add('open');
+}
+function closeModal() { document.getElementById('replyModal').classList.remove('open'); }
+
+async function saveReply() {
+  const catId = document.getElementById('modalCat').value;
+  const title = document.getElementById('modalTitleInput').value.trim();
+  const body = document.getElementById('modalBody').value.trim();
+  if (!title) { showToast('請填寫情境標題', true); return; }
+  if (!body) { showToast('請填寫回覆內文', true); return; }
+
+  const cat = CATEGORIES.find(c => c.id === catId);
+  let replyObj;
+  if (editIdx !== null && editCatId !== null) {
+    const old = CATEGORIES.find(c => c.id === editCatId);
+    const [r] = old.replies.splice(editIdx, 1);
+    replyObj = { id: r.id, title, body };
+    cat.replies.push(replyObj);
+  } else {
+    replyObj = { id: `reply-${catId.replace('cat-','')}-${Date.now().toString().slice(-4)}`, title, body };
+    cat.replies.push(replyObj);
+  }
+
+  closeModal();
+  if (currentCatId === catId) renderCategory(catId);
+  buildCatOptions(document.getElementById('adminCatSelect'), catId);
+  document.getElementById('adminCatSelect').value = catId;
+  renderAdminList(); showToast('儲存中…');
+
+  try {
+    await fetch(SHEETS_API, { method:'POST', body: JSON.stringify({action:'upsert', category_id:catId, reply:replyObj}) });
+    showToast(editIdx !== null ? '✅ 回覆已更新並儲存' : '✅ 回覆已新增並儲存');
+  } catch(e) { showToast('⚠️ 本地已更新，但 Sheets 同步失敗', true); }
+}
+
+// Delete
+let pendingDelCat = null, pendingDelIdx = null;
+function confirmDelete(catId, idx) {
+  pendingDelCat = catId; pendingDelIdx = idx;
+  const cat = CATEGORIES.find(c => c.id === catId);
+  document.getElementById('confirmDesc').textContent = `確定要刪除「${cat.replies[idx].title}」嗎？此操作無法復原。`;
+  document.getElementById('confirmOverlay').classList.add('open');
+  document.getElementById('confirmOkBtn').onclick = async () => {
+    const cat = CATEGORIES.find(c => c.id === pendingDelCat);
+    const [deleted] = cat.replies.splice(pendingDelIdx, 1);
+    document.getElementById('confirmOverlay').classList.remove('open');
+    renderAdminList(); showToast('刪除中…');
+    try {
+      await fetch(SHEETS_API, { method:'POST', body: JSON.stringify({action:'delete', category_id:pendingDelCat, reply:{id:deleted.id}}) });
+      showToast('🗑️ 回覆已刪除並同步');
+    } catch(e) { showToast('⚠️ 本地已刪除，但 Sheets 同步失敗', true); }
+  };
+}
+function closeConfirm() { document.getElementById('confirmOverlay').classList.remove('open'); }
+
+async function syncReorder(catId) {
+  const cat = CATEGORIES.find(c => c.id === catId);
+  try {
+    await fetch(SHEETS_API, { method:'POST', body: JSON.stringify({action:'reorder', category_id:catId, replies:cat.replies}) });
+    showToast('✅ 順序已同步');
+  } catch(e) { showToast('⚠️ 本地已更新，但 Sheets 同步失敗', true); }
+}
+
+// ══════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════
+let toastTimer;
+function showToast(msg, isError = false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = isError ? 'error' : '';
+  el.style.opacity = '1';
+  el.style.transform = 'translateX(-50%) translateY(0)';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(-50%) translateY(8px)';
+  }, 2500);
+}
+
+// ══════════════════════════════════════
+// START
 // ══════════════════════════════════════
 loadData();
 initLookerUrl();
