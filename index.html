@@ -445,7 +445,7 @@ function jsonp(url) {
     const script = document.createElement('script');
     const timeout = setTimeout(() => {
       cleanup(); reject(new Error('timeout'));
-    }, 15000);
+    }, 40000);
     function cleanup() {
       clearTimeout(timeout);
       delete window[cbName];
@@ -955,13 +955,14 @@ async function classifyMessage() {
   document.getElementById('aiResult').classList.add('hidden');
   document.getElementById('aiError').classList.add('hidden');
   document.getElementById('aiLoading').classList.remove('hidden');
-  document.getElementById('aiBtn').disabled = true;
+  const btn = document.getElementById('aiBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="material-symbols-outlined text-[16px] animate-spin">autorenew</span>AI 分析中…';
 
   try {
     const data = await jsonp(SHEETS_API + '?action=classify&message=' + encodeURIComponent(input));
 
     document.getElementById('aiLoading').classList.add('hidden');
-    document.getElementById('aiBtn').disabled = false;
 
     if (!data || !data.category_id) throw new Error('無法判斷類別，請再試一次');
 
@@ -984,12 +985,30 @@ async function classifyMessage() {
     const repliesEl = document.getElementById('aiReplies');
     const labelEl = document.getElementById('aiRepliesLabel');
 
-    if (data.replies && data.replies.length > 0) {
+    if (data.generated_reply && data.replies && data.replies.length > 0) {
+      // 有範本 + 有 AI 生成：兩個都顯示
+      labelEl.textContent = '推薦回覆範本';
+      repliesEl.innerHTML = data.replies.map((r, i) => replyCardHTML(r, '', i)).join('') + `
+        <div class="reply-card rounded-2xl p-6 ghost-border tonal-shadow-sm fade-up border-l-4 border-secondary-container mt-2">
+          <div class="flex items-center gap-2 mb-4">
+            <span class="inline-block bg-secondary-container text-on-secondary-container text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full font-label">✨ AI 針對性草稿</span>
+            <span class="text-on-surface-variant/50 text-[10px] font-body">請確認內容後再使用</span>
+          </div>
+          <p class="text-on-surface text-sm font-body leading-relaxed whitespace-pre-wrap mb-5">${esc(data.generated_reply)}</p>
+          <div class="flex justify-end">
+            <button class="copy-btn flex items-center gap-2 bg-secondary text-white px-5 py-2.5 rounded-xl text-xs font-bold font-label uppercase tracking-wider hover:opacity-90 tonal-shadow-sm"
+              onclick="copyReply(this,${JSON.stringify(data.generated_reply)})">
+              <span class="material-symbols-outlined text-[16px]">content_copy</span>複製草稿
+            </button>
+          </div>
+        </div>`;
+    } else if (data.replies && data.replies.length > 0) {
+      // 只有範本
       labelEl.textContent = '推薦回覆範本';
       repliesEl.innerHTML = data.replies.map((r, i) => replyCardHTML(r, '', i)).join('');
     } else if (data.generated_reply) {
+      // 只有 AI 生成
       labelEl.textContent = 'AI 生成回覆';
-      const genReply = { id: 'ai-generated', title: 'AI 自動生成', body: data.generated_reply };
       repliesEl.innerHTML = `
         <div class="reply-card rounded-2xl p-6 ghost-border tonal-shadow-sm fade-up border-l-4 border-secondary-container">
           <div class="flex items-center gap-2 mb-4">
@@ -1013,9 +1032,11 @@ async function classifyMessage() {
 
   } catch(err) {
     document.getElementById('aiLoading').classList.add('hidden');
-    document.getElementById('aiBtn').disabled = false;
     document.getElementById('aiErrorMsg').textContent = err.message || '發生錯誤，請稍後再試';
     document.getElementById('aiError').classList.remove('hidden');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-symbols-outlined text-[16px]">auto_awesome</span>自動分類';
   }
 }
 
