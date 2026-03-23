@@ -696,6 +696,46 @@ mark { background: var(--yellow); color: var(--blue); border-radius: 2px; paddin
 }
 #toast.error { background: #b91c1c; }
 
+/* ══ ANNOUNCEMENTS ══ */
+#announcements-wrap { padding: 20px 28px 0; }
+.ann-section-label {
+  font-size: 10px; font-weight: 700; color: var(--text-mute);
+  letter-spacing: .08em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+}
+.ann-section-label::before { content:''; width:3px; height:14px; background:var(--orange); border-radius:2px; }
+.ann-list { display: flex; flex-direction: column; gap: 8px; }
+.ann-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1.5px solid var(--border);
+  padding: 14px 18px;
+  display: flex; align-items: flex-start; gap: 14px;
+  box-shadow: var(--shadow-sm);
+}
+.ann-card-bar { width: 3px; min-height: 36px; border-radius: 2px; background: var(--blue); flex-shrink: 0; margin-top: 2px; }
+.ann-card-body { flex: 1; min-width: 0; }
+.ann-card-date { font-size: 10px; color: var(--text-light); font-weight: 500; margin-bottom: 3px; }
+.ann-card-text { font-size: 13px; color: var(--text); line-height: 1.7; white-space: pre-wrap; }
+.ann-empty { font-size: 12px; color: var(--text-light); padding: 8px 0; }
+
+/* Admin announcement section */
+.admin-section-title {
+  font-size: 12px; font-weight: 700; color: var(--blue);
+  display: flex; align-items: center; gap: 6px; margin-bottom: 14px;
+  padding-bottom: 10px; border-bottom: 1.5px solid var(--border);
+}
+.admin-section-title .material-symbols-outlined { font-size: 16px; }
+.ann-admin-item {
+  background: var(--surface); border-radius: var(--radius);
+  border: 1.5px solid var(--border); padding: 12px 16px;
+  display: flex; gap: 12px; align-items: flex-start; margin-bottom: 8px;
+}
+.ann-admin-item:hover { border-color: rgba(6,14,159,.18); }
+.ann-admin-date { font-size: 10px; color: var(--text-light); font-weight: 500; flex-shrink: 0; min-width: 36px; margin-top: 2px; }
+.ann-admin-text { flex: 1; font-size: 12px; color: var(--text); line-height: 1.6; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.ann-admin-actions { display: flex; gap: 4px; flex-shrink: 0; }
+
 /* ══ FADE ANIM ══ */
 .fade-up { animation: fadeUp .28s cubic-bezier(.4,0,.2,1) both; }
 .d1 { animation-delay: .04s } .d2 { animation-delay: .08s } .d3 { animation-delay: .12s }
@@ -773,6 +813,12 @@ mark { background: var(--yellow); color: var(--blue); border-radius: 2px; paddin
         <span class="chip" onclick="quickSearch('登入')">登入</span>
         <span class="chip" onclick="quickSearch('退瓶')">退瓶</span>
       </div>
+    </div>
+
+    <!-- Announcements -->
+    <div id="announcements-wrap" style="display:none">
+      <div class="ann-section-label">最新通知</div>
+      <div class="ann-list" id="annList"></div>
     </div>
 
     <!-- Content -->
@@ -881,8 +927,24 @@ mark { background: var(--yellow); color: var(--blue); border-radius: 2px; paddin
         </div>
       </div>
 
+      <!-- Announcement management -->
+      <div style="margin-bottom:28px">
+        <div class="admin-section-title">
+          <span class="material-symbols-outlined">campaign</span>公告管理
+        </div>
+        <div class="admin-toolbar">
+          <span style="flex:1;font-size:12px;color:var(--text-mute)">顯示於回覆範本上方，讓使用者快速掌握最新狀況</span>
+          <button class="add-btn" onclick="openAnnModal()">
+            <span class="material-symbols-outlined">add_circle</span>新增公告
+          </button>
+        </div>
+        <div id="annAdminList"></div>
+      </div>
+
       <!-- Reply list -->
-      <div class="admin-toolbar">
+      <div class="admin-section-title" style="margin-top:0">
+        <span class="material-symbols-outlined">chat_bubble</span>回覆範本管理
+      </div>
         <select id="adminCatSelect" onchange="renderAdminList()"></select>
         <button class="add-btn" onclick="openAddModal()">
           <span class="material-symbols-outlined">add_circle</span>新增回覆
@@ -893,6 +955,32 @@ mark { background: var(--yellow); color: var(--blue); border-radius: 2px; paddin
   </div>
 
 </div><!-- /#main -->
+
+<!-- ══ MODAL: 公告新增/編輯 ══ -->
+<div id="annModal" class="modal-overlay" onclick="if(event.target===this)closeAnnModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="annModalTitle">新增公告</div>
+      <button class="modal-close" onclick="closeAnnModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label>日期</label>
+        <input type="date" id="annDate">
+      </div>
+      <div class="form-field">
+        <label>公告內文</label>
+        <textarea id="annBody" rows="5" placeholder="輸入公告內容，例如：滿倉清運已完成，目前機台運作正常"></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeAnnModal()">取消</button>
+      <button class="btn-save" onclick="saveAnn()">
+        <span class="material-symbols-outlined">save</span>儲存
+      </button>
+    </div>
+  </div>
+</div>
 
 <!-- ══ MODAL: 新增/編輯 ══ -->
 <div id="replyModal" class="modal-overlay" onclick="if(event.target===this)closeModal()">
@@ -951,6 +1039,7 @@ mark { background: var(--yellow); color: var(--blue); border-radius: 2px; paddin
 // CONFIG
 // ══════════════════════════════════════
 let CATEGORIES = [];
+let ANNOUNCEMENTS = [];
 const SHEETS_API = 'https://script.google.com/macros/s/AKfycbwzfJECt4mCgIlMxLLGVUCSectRW4SBPOf9yXZA42vy6OND7_TSZfmsaKo3brab70yq/exec';
 const DEFAULT_LOOKER_URL = 'https://lookerstudio.google.com/embed/reporting/634f8f09-ecf7-4699-82c7-7c77a9ad78ea/page/p_myealqpprd';
 
@@ -976,8 +1065,17 @@ function jsonp(url) {
 async function loadData() {
   showLoading();
   try {
-    CATEGORIES = await jsonp(SHEETS_API);
+    const res = await jsonp(SHEETS_API);
+    // 支援新格式 {categories, announcements} 及舊格式（陣列）
+    if (Array.isArray(res)) {
+      CATEGORIES = res;
+      ANNOUNCEMENTS = [];
+    } else {
+      CATEGORIES = res.categories || [];
+      ANNOUNCEMENTS = res.announcements || [];
+    }
     updateTopbarCount();
+    renderAnnouncements();
   } catch(e) {
     document.getElementById('app').innerHTML = `
       <div class="loading-wrap">
@@ -1032,6 +1130,7 @@ function switchTab(tabId) {
 
   if (tabId === 'admin') {
     renderAdminList();
+    renderAnnAdminList();
     const input = document.getElementById('lookerUrlInput');
     if (input) input.value = localStorage.getItem('lookerUrl') || DEFAULT_LOOKER_URL;
   }
@@ -1311,6 +1410,120 @@ function viewAllFromAI() {
 document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && e.ctrlKey && activeTab === 'ai') classifyMessage();
 });
+
+// ══════════════════════════════════════
+// ANNOUNCEMENTS (前端顯示)
+// ══════════════════════════════════════
+function renderAnnouncements() {
+  const wrap = document.getElementById('announcements-wrap');
+  const list = document.getElementById('annList');
+  if (!ANNOUNCEMENTS.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  list.innerHTML = ANNOUNCEMENTS.map(a => `
+    <div class="ann-card fade-up">
+      <div class="ann-card-bar"></div>
+      <div class="ann-card-body">
+        ${a.date ? `<div class="ann-card-date">${esc(a.date)}</div>` : ''}
+        <div class="ann-card-text">${esc(a.body)}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════
+// ANNOUNCEMENTS (後台管理)
+// ══════════════════════════════════════
+function renderAnnAdminList() {
+  const list = document.getElementById('annAdminList');
+  if (!ANNOUNCEMENTS.length) {
+    list.innerHTML = `<div class="ann-empty">目前沒有公告，點擊「新增公告」建立第一則</div>`;
+    return;
+  }
+  list.innerHTML = ANNOUNCEMENTS.map((a, i) => `
+    <div class="ann-admin-item fade-up">
+      <div class="ann-admin-date">${esc(a.date || '—')}</div>
+      <div class="ann-admin-text">${esc(a.body)}</div>
+      <div class="ann-admin-actions">
+        <button class="edit-btn" onclick="openEditAnnModal(${i})">
+          <span class="material-symbols-outlined">edit</span>編輯
+        </button>
+        <button class="del-btn" onclick="confirmDeleteAnn(${i})">
+          <span class="material-symbols-outlined">delete</span>刪除
+        </button>
+      </div>
+    </div>`).join('');
+}
+
+let editAnnIdx = null;
+
+function openAnnModal() {
+  editAnnIdx = null;
+  document.getElementById('annModalTitle').textContent = '新增公告';
+  document.getElementById('annDate').value = new Date().toISOString().slice(0,10);
+  document.getElementById('annBody').value = '';
+  document.getElementById('annModal').classList.add('open');
+}
+
+function openEditAnnModal(idx) {
+  editAnnIdx = idx;
+  const a = ANNOUNCEMENTS[idx];
+  document.getElementById('annModalTitle').textContent = '編輯公告';
+  document.getElementById('annDate').value = a.date || '';
+  document.getElementById('annBody').value = a.body || '';
+  document.getElementById('annModal').classList.add('open');
+}
+
+function closeAnnModal() { document.getElementById('annModal').classList.remove('open'); }
+
+async function saveAnn() {
+  const date = document.getElementById('annDate').value.trim();
+  const body = document.getElementById('annBody').value.trim();
+  if (!body) { showToast('請填寫公告內容', true); return; }
+
+  // 格式化日期顯示 MM/DD
+  const dateDisplay = date ? date.slice(5).replace('-','/') : '';
+  let annObj;
+
+  if (editAnnIdx !== null) {
+    annObj = { ...ANNOUNCEMENTS[editAnnIdx], date: dateDisplay, body };
+    ANNOUNCEMENTS[editAnnIdx] = annObj;
+  } else {
+    annObj = { id: 'ann-' + Date.now().toString().slice(-6), date: dateDisplay, body };
+    ANNOUNCEMENTS.unshift(annObj); // 最新的在最前
+  }
+
+  closeAnnModal();
+  renderAnnouncements();
+  renderAnnAdminList();
+  showToast('儲存中…');
+
+  try {
+    await fetch(SHEETS_API, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'upsert_announcement', reply: annObj })
+    });
+    showToast(editAnnIdx !== null ? '✅ 公告已更新並儲存' : '✅ 公告已新增並儲存');
+  } catch(e) { showToast('⚠️ 本地已更新，但 Sheets 同步失敗', true); }
+}
+
+function confirmDeleteAnn(idx) {
+  const a = ANNOUNCEMENTS[idx];
+  document.getElementById('confirmDesc').textContent = `確定要刪除這則公告嗎？此操作無法復原。`;
+  document.getElementById('confirmOverlay').classList.add('open');
+  document.getElementById('confirmOkBtn').onclick = async () => {
+    const [deleted] = ANNOUNCEMENTS.splice(idx, 1);
+    document.getElementById('confirmOverlay').classList.remove('open');
+    renderAnnouncements();
+    renderAnnAdminList();
+    showToast('刪除中…');
+    try {
+      await fetch(SHEETS_API, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'delete_announcement', reply: { id: deleted.id } })
+      });
+      showToast('🗑️ 公告已刪除並同步');
+    } catch(e) { showToast('⚠️ 本地已刪除，但 Sheets 同步失敗', true); }
+  };
+}
 
 // ══════════════════════════════════════
 // ADMIN CMS
