@@ -1064,19 +1064,14 @@ const SHEETS_API = 'https://script.google.com/macros/s/AKfycbwzfJECt4mCgIlMxLLGV
 const DEFAULT_LOOKER_URL = 'https://lookerstudio.google.com/embed/reporting/634f8f09-ecf7-4699-82c7-7c77a9ad78ea/page/p_myealqpprd';
 
 // ══════════════════════════════════════
-// JSONP
+// FETCH (replaces JSONP to bypass GitHub Pages CSP)
 // ══════════════════════════════════════
-function jsonp(url) {
-  return new Promise((resolve, reject) => {
-    const cbName = '_jsonp_' + Date.now();
-    const script = document.createElement('script');
-    const timeout = setTimeout(() => { cleanup(); reject(new Error('請求逾時，請稍後再試')); }, 40000);
-    function cleanup() { clearTimeout(timeout); delete window[cbName]; if (script.parentNode) script.parentNode.removeChild(script); }
-    window[cbName] = (data) => { cleanup(); resolve(data); };
-    script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cbName;
-    script.onerror = () => { cleanup(); reject(new Error('網路錯誤，請稍後再試')); };
-    document.head.appendChild(script);
-  });
+function fetchData(url) {
+  return fetch(url)
+    .then(res => {
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      return res.json();
+    });
 }
 
 // ══════════════════════════════════════
@@ -1085,7 +1080,7 @@ function jsonp(url) {
 async function loadData() {
   showLoading();
   try {
-    const res = await jsonp(SHEETS_API);
+    const res = await fetchData(SHEETS_API);
     // 支援新格式 {categories, announcements} 及舊格式（陣列）
     if (Array.isArray(res)) {
       CATEGORIES = res;
