@@ -320,7 +320,17 @@ body {
   font-size: 13px; color: var(--text);
   line-height: 1.8; white-space: pre-wrap;
 }
-.reply-card-footer { display: flex; justify-content: flex-end; }
+.reply-card-footer { display: flex; justify-content: space-between; align-items: center; }
+.pin-btn {
+  display: flex; align-items: center; gap: 5px;
+  background: none; border: none; cursor: pointer;
+  font-size: 11px; font-weight: 500; color: var(--text-light);
+  font-family: 'Noto Sans TC', sans-serif; padding: 4px 6px; border-radius: 6px;
+}
+.pin-btn .material-symbols-outlined { font-size: 16px; }
+.pin-btn:hover { background: rgba(6,14,159,.06); color: var(--blue); }
+.pin-btn.pinned { color: var(--orange); }
+.pin-btn.pinned .material-symbols-outlined { font-variation-settings: 'FILL' 1; }
 .copy-btn {
   display: flex; align-items: center; gap: 6px;
   background: var(--blue);
@@ -718,6 +728,16 @@ mark { background: var(--yellow); color: var(--blue); border-radius: 2px; paddin
 .ann-card-date { font-size: 10px; color: var(--text-light); font-weight: 500; margin-bottom: 3px; }
 .ann-card-text { font-size: 13px; color: var(--text); line-height: 1.7; white-space: pre-wrap; }
 .ann-empty { font-size: 12px; color: var(--text-light); padding: 8px 0; }
+
+/* ══ PINNED REPLIES ══ */
+.pinned-wrap { margin-bottom: 24px; }
+.pinned-header {
+  font-size: 10px; font-weight: 700; color: var(--text-mute);
+  letter-spacing: .08em; text-transform: uppercase;
+  display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+}
+.pinned-header-bar { width: 3px; height: 14px; background: var(--orange); border-radius: 2px; }
+.reply-card.is-pinned { border-color: rgba(255,80,0,.18); }
 
 /* Admin announcement section */
 .admin-section-title {
@@ -1169,7 +1189,24 @@ function renderHome() {
   currentCatId = null;
   updateTopbarCount();
   const app = document.getElementById('app');
-  app.innerHTML = `<div class="cat-grid">${CATEGORIES.map((cat, i) => catCardHTML(cat, i)).join('')}</div>`;
+  app.innerHTML = `
+    <div id="pinnedWrap" class="pinned-wrap" style="display:none">
+      <div class="pinned-header">
+        <div class="pinned-header-bar"></div>
+        常用釘選
+      </div>
+      <div class="reply-list" id="pinnedList"></div>
+      <div style="height:8px"></div>
+      <div class="pinned-header" style="margin-top:16px">
+        <div class="pinned-header-bar" style="background:var(--blue)"></div>
+        問題類別
+      </div>
+    </div>
+    <div id="catSectionLabel" style="display:none" class="pinned-header">
+      <div class="pinned-header-bar" style="background:var(--blue)"></div>問題類別
+    </div>
+    <div class="cat-grid">${CATEGORIES.map((cat, i) => catCardHTML(cat, i)).join('')}</div>`;
+  renderPinnedSection();
 }
 
 function catCardHTML(cat, i) {
@@ -1217,13 +1254,22 @@ function renderCategory(catId) {
 // ══════════════════════════════════════
 // REPLY CARD
 // ══════════════════════════════════════
-function replyCardHTML(r, q, i) {
+function replyCardHTML(r, q, i, showPin = true) {
   const delay = ['d1','d2','d3','d4','d5','d6','d7','d8'][i] || '';
+  const isPinned = PINNED_IDS.has(r.id);
+  const pinClass = isPinned ? 'pin-btn pinned' : 'pin-btn';
+  const pinLabel = isPinned ? '已釘選' : '釘選';
+  const cardClass = isPinned ? 'reply-card is-pinned fade-up ' + delay : 'reply-card fade-up ' + delay;
+  const pinBtn = showPin ? `
+    <button class="${pinClass}" onclick="togglePin(event,'${esc(r.id)}')">
+      <span class="material-symbols-outlined">push_pin</span>${pinLabel}
+    </button>` : '';
   return `
-  <div class="reply-card fade-up ${delay}">
+  <div class="${cardClass}" data-reply-id="${esc(r.id)}">
     <span class="reply-card-tag">${esc(r.title)}</span>
     <div class="reply-card-body">${hl(r.body, q)}</div>
     <div class="reply-card-footer">
+      ${pinBtn}
       <button class="copy-btn" onclick="copyReply(this,${JSON.stringify(r.body)})">
         <span class="material-symbols-outlined">content_copy</span>複製此回覆
       </button>
@@ -1412,6 +1458,51 @@ document.addEventListener('keydown', e => {
 });
 
 // ══════════════════════════════════════
+// PINNED REPLIES
+// ══════════════════════════════════════
+let PINNED_IDS = new Set(JSON.parse(localStorage.getItem('pinnedIds') || '[]'));
+
+function savePinned() {
+  localStorage.setItem('pinnedIds', JSON.stringify([...PINNED_IDS]));
+}
+
+function getPinnedReplies() {
+  const all = CATEGORIES.flatMap(c => c.replies);
+  return [...PINNED_IDS].map(id => all.find(r => r.id === id)).filter(Boolean);
+}
+
+function togglePin(e, replyId) {
+  e.stopPropagation();
+  if (PINNED_IDS.has(replyId)) {
+    PINNED_IDS.delete(replyId);
+  } else {
+    PINNED_IDS.add(replyId);
+  }
+  savePinned();
+  // 更新當前畫面上所有同 id 的釘選按鈕狀態
+  document.querySelectorAll(`[data-reply-id="${replyId}"]`).forEach(card => {
+    const btn = card.querySelector('.pin-btn');
+    if (!btn) return;
+    const isPinned = PINNED_IDS.has(replyId);
+    btn.className = isPinned ? 'pin-btn pinned' : 'pin-btn';
+    btn.querySelector('span:last-child') && (btn.querySelector('span:last-child').textContent = isPinned ? '已釘選' : '釘選');
+    card.classList.toggle('is-pinned', isPinned);
+  });
+  // 若在首頁，重新渲染釘選區
+  if (!currentCatId && !searchQuery) renderPinnedSection();
+}
+
+function renderPinnedSection() {
+  const wrap = document.getElementById('pinnedWrap');
+  if (!wrap) return;
+  const pinned = getPinnedReplies();
+  if (!pinned.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  document.getElementById('pinnedList').innerHTML =
+    pinned.map((r, i) => replyCardHTML(r, '', i, true)).join('');
+}
+
+// ══════════════════════════════════════
 // ANNOUNCEMENTS (前端顯示)
 // ══════════════════════════════════════
 function renderAnnouncements() {
@@ -1467,7 +1558,7 @@ function openEditAnnModal(idx) {
   editAnnIdx = idx;
   const a = ANNOUNCEMENTS[idx];
   document.getElementById('annModalTitle').textContent = '編輯公告';
-  document.getElementById('annDate').value = a.date || '';
+  document.getElementById('annDate').value = a.date ? a.date.replace(/\//g,'-') : '';
   document.getElementById('annBody').value = a.body || '';
   document.getElementById('annModal').classList.add('open');
 }
@@ -1479,8 +1570,8 @@ async function saveAnn() {
   const body = document.getElementById('annBody').value.trim();
   if (!body) { showToast('請填寫公告內容', true); return; }
 
-  // 格式化日期顯示 MM/DD
-  const dateDisplay = date ? date.slice(5).replace('-','/') : '';
+  // 格式化日期顯示 YYYY/MM/DD
+  const dateDisplay = date ? date.replace(/-/g,'/') : '';
   let annObj;
 
   if (editAnnIdx !== null) {
