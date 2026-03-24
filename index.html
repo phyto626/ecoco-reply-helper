@@ -1270,14 +1270,24 @@ function replyCardHTML(r, q, i, showPin = true) {
     <div class="reply-card-body">${hl(r.body, q)}</div>
     <div class="reply-card-footer">
       ${pinBtn}
-      <button class="copy-btn" onclick="copyReply(this,${JSON.stringify(r.body)})">
+      <button class="copy-btn" data-body="${esc(r.body)}" onclick="copyReply(this)">
         <span class="material-symbols-outlined">content_copy</span>複製此回覆
       </button>
     </div>
   </div>`;
 }
 
-function copyReply(btn, text) {
+function draftCopyReply(btn) {
+  const text = btn.dataset.body || btn.getAttribute('data-body') || '';
+  const done = () => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:14px;font-variation-settings:\'FILL\' 1">check_circle</span>已複製！';
+    setTimeout(() => { btn.innerHTML = orig; }, 2000);
+  };
+  navigator.clipboard ? navigator.clipboard.writeText(text).then(done).catch(done)
+    : (() => { const ta = Object.assign(document.createElement('textarea'), {value:text,style:'position:fixed;opacity:0'}); document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done(); })();
+}
+  const text = btn.dataset.body || btn.getAttribute('data-body') || '';
   const done = () => {
     btn.classList.add('copied');
     btn.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings:\'FILL\' 1">check_circle</span>已複製！';
@@ -1409,7 +1419,7 @@ async function classifyMessage() {
           <div class="ai-draft-note">請確認內容後再使用</div>
           <div class="ai-draft-body">${esc(data.generated_reply)}</div>
           <div class="ai-draft-footer">
-            <button class="draft-copy-btn" onclick="copyReply(this,${JSON.stringify(data.generated_reply)})">
+            <button class="draft-copy-btn" data-body="${esc(data.generated_reply)}" onclick="draftCopyReply(this)">
               <span class="material-symbols-outlined" style="font-size:14px">content_copy</span>複製草稿
             </button>
           </div>
@@ -1425,7 +1435,7 @@ async function classifyMessage() {
           <div class="ai-draft-note">請確認內容後再使用</div>
           <div class="ai-draft-body">${esc(data.generated_reply)}</div>
           <div class="ai-draft-footer">
-            <button class="draft-copy-btn" onclick="copyReply(this,${JSON.stringify(data.generated_reply)})">
+            <button class="draft-copy-btn" data-body="${esc(data.generated_reply)}" onclick="draftCopyReply(this)">
               <span class="material-symbols-outlined" style="font-size:14px">content_copy</span>複製草稿
             </button>
           </div>
