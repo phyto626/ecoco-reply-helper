@@ -1282,6 +1282,7 @@ function draftCopyReply(btn) {
   navigator.clipboard ? navigator.clipboard.writeText(text).then(done).catch(done)
     : (() => { const ta = Object.assign(document.createElement('textarea'), {value:text,style:'position:fixed;opacity:0'}); document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done(); })();
 }
+function copyReply(btn) {
   const text = btn.dataset.body || btn.getAttribute('data-body') || '';
   const done = () => {
     btn.classList.add('copied');
