@@ -1388,7 +1388,7 @@ async function classifyMessage() {
   btn.innerHTML = '<span class="material-symbols-outlined spin-icon">autorenew</span>AI 分析中…';
 
   try {
-    const data = await jsonp(SHEETS_API + '?action=classify&message=' + encodeURIComponent(input));
+    const data = await fetchData(SHEETS_API + '?action=classify&message=' + encodeURIComponent(input));
     document.getElementById('aiLoading').style.display = 'none';
     if (!data || !data.category_id) throw new Error('無法判斷類別，請再試一次');
 
