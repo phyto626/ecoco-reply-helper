@@ -107,7 +107,6 @@ function doPost(e) {
     if (!sheet) throw new Error('找不到分頁：' + category_id);
 
     if (action === 'upsert') {
-      // 找是否已存在（更新）
       const lastRow = sheet.getLastRow();
       let found = false;
       if (lastRow > 1) {
@@ -118,7 +117,6 @@ function doPost(e) {
           found = true;
         }
       }
-      // 找不到就新增
       if (!found) {
         sheet.appendRow([reply.id, reply.title, reply.body]);
       }
@@ -130,7 +128,6 @@ function doPost(e) {
         if (rowIdx >= 0) sheet.deleteRow(rowIdx + 2);
       }
     } else if (action === 'reorder') {
-      // 重新寫入整個類別（拖曳排序後呼叫）
       const { replies } = payload;
       if (sheet.getLastRow() > 1) sheet.deleteRows(2, sheet.getLastRow() - 1);
       replies.forEach(r => sheet.appendRow([r.id, r.title, r.body]));
@@ -163,24 +160,35 @@ function doPost(e) {
 
 ## 三、更新 index.html 串接 Sheets API
 
-取得 Web App 網址後，修改 `index.html` 的資料載入方式：
+取得 Web App 網址後，修改 `index.html` 中的 `SHEETS_API` 變數：
 
 找到以下這一行：
 ```javascript
-const res = await fetch('./data/replies.json');
+const SHEETS_API = 'https://script.google.com/macros/s/【原有網址】/exec';
 ```
 
-改為：
+改為你自己部署的網址：
 ```javascript
 const SHEETS_API = 'https://script.google.com/macros/s/【貼上你的網址】/exec';
-const res = await fetch(SHEETS_API);
 ```
-
-> 後台的新增、編輯、刪除也需要對應呼叫 `doPost`，此部分可在串接時一起處理。
 
 ---
 
-## 四、測試
+## 四、機台狀態查詢網址
+
+點擊側邊欄「機台狀態」會另開新分頁，預設網址設定於 `index.html` 的 `DEFAULT_LOOKER_URL`：
+
+```javascript
+const DEFAULT_LOOKER_URL = 'https://100.ecocogroup.com/stores';
+```
+
+若需更換查詢網址，直接修改此變數值即可。
+
+> ℹ️ 目前機台狀態系統需登入帳號才能查看，因此採用另開新分頁方式，不在平台內嵌入。
+
+---
+
+## 五、測試
 
 ### 測試 GET（讀取）
 
@@ -200,7 +208,7 @@ curl -X POST \
 
 ---
 
-## 五、注意事項
+## 六、注意事項
 
 - **每次修改 Apps Script 程式碼後，必須重新部署**（新版本），舊網址不會自動更新
 - **CORS**：Apps Script Web App 預設允許跨域請求，不需額外設定
@@ -208,4 +216,4 @@ curl -X POST \
 
 ---
 
-*建立日期：2026/03/21*
+*建立日期：2026/03/21　最後更新：2026/03/27*
