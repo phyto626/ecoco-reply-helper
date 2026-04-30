@@ -761,6 +761,159 @@ mark { background: var(--yellow); color: var(--blue); border-radius: 2px; paddin
 .d1 { animation-delay: .04s } .d2 { animation-delay: .08s } .d3 { animation-delay: .12s }
 .d4 { animation-delay: .16s } .d5 { animation-delay: .20s } .d6 { animation-delay: .24s }
 .d7 { animation-delay: .28s } .d8 { animation-delay: .32s }
+
+/* ══ STORY COLLECTOR ══ */
+.story-header {
+  background: var(--blue);
+  padding: 28px 28px 24px;
+}
+.story-header-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,.4); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+.story-header-title { font-size: 24px; font-weight: 900; color: #fff; }
+.story-header-sub { font-size: 12px; color: rgba(255,255,255,.5); margin-top: 4px; }
+
+.story-unlock-bar {
+  background: var(--orange); color: #fff;
+  padding: 10px 28px;
+  font-size: 12px; font-weight: 700;
+  display: none; align-items: center; gap: 8px;
+}
+.story-unlock-bar.visible { display: flex; }
+.story-unlock-bar .material-symbols-outlined { font-size: 16px; }
+
+.story-body-wrap { padding: 20px 28px; }
+
+.story-toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; }
+.story-search-wrap { flex: 1; position: relative; }
+.story-search-wrap .material-symbols-outlined {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  font-size: 16px; color: var(--text-light); pointer-events: none;
+}
+#storySearchInput {
+  width: 100%; height: 40px; padding: 0 12px 0 38px;
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  background: var(--surface);
+  font-family: 'Noto Sans TC', sans-serif; font-size: 13px; color: var(--text); outline: none;
+}
+#storySearchInput:focus { border-color: var(--blue); }
+#storySearchInput::placeholder { color: var(--text-light); }
+
+.story-add-btn {
+  display: none; align-items: center; gap: 6px;
+  background: var(--orange); color: #fff;
+  border: none; border-radius: var(--radius); padding: 0 16px; height: 40px;
+  font-size: 11px; font-weight: 700; cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif; white-space: nowrap;
+}
+.story-add-btn.visible { display: flex; }
+.story-add-btn .material-symbols-outlined { font-size: 16px; }
+.story-add-btn:hover { background: var(--orange-lt); }
+
+.story-filter-bar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+.story-filter-chip {
+  height: 28px; padding: 0 14px; border-radius: 99px;
+  background: rgba(6,14,159,.06); color: var(--blue);
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  border: 1.5px solid transparent;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.story-filter-chip:hover { background: rgba(6,14,159,.12); }
+.story-filter-chip.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+.story-list { display: flex; flex-direction: column; gap: 12px; }
+.story-card {
+  background: var(--surface); border-radius: var(--radius-lg);
+  padding: 18px 20px; border: 1.5px solid var(--border);
+  box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 10px;
+}
+.story-card:hover { border-color: rgba(6,14,159,.18); box-shadow: var(--shadow-md); }
+.story-card-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.story-platform-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 900; padding: 3px 10px;
+  border-radius: 99px; color: #fff; letter-spacing: .02em;
+}
+.story-platform-badge.ig { background: #E1306C; }
+.story-platform-badge.fb { background: #1877F2; }
+.story-platform-badge.google { background: #EA4335; }
+.story-platform-badge.other { background: var(--text-light); }
+
+.story-username { font-size: 11px; color: var(--text-mute); font-weight: 500; }
+
+.story-body { font-size: 13px; color: var(--text); line-height: 1.8; white-space: pre-wrap; }
+.story-body.clamped {
+  display: -webkit-box; -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical; overflow: hidden; white-space: normal;
+}
+.story-expand-btn {
+  background: none; border: none; cursor: pointer;
+  font-size: 11px; font-weight: 700; color: var(--blue);
+  padding: 2px 0; font-family: 'Noto Sans TC', sans-serif; align-self: flex-start;
+}
+.story-expand-btn:hover { color: var(--orange); }
+
+.story-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.story-tag-chip {
+  background: rgba(6,14,159,.06); color: var(--blue);
+  font-size: 10px; font-weight: 700; padding: 2px 10px; border-radius: 99px;
+}
+
+.story-card-footer { display: flex; justify-content: space-between; align-items: center; }
+.story-meta { font-size: 10px; color: var(--text-light); display: flex; align-items: center; gap: 6px; }
+.story-card-actions { display: flex; gap: 6px; align-items: center; }
+.story-manage-actions { display: none; gap: 4px; }
+.story-manage-actions.visible { display: flex; }
+
+.story-copy-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--blue); color: #fff;
+  border: none; border-radius: 8px; padding: 7px 14px;
+  font-size: 11px; font-weight: 700;
+  font-family: 'Noto Sans TC', sans-serif; cursor: pointer;
+}
+.story-copy-btn .material-symbols-outlined { font-size: 14px; }
+.story-copy-btn:hover { background: var(--blue-dark); }
+.story-copy-btn.copied { background: #1a8a4a; }
+
+/* Story Modal — Tag Input */
+.tag-input-wrap { display: flex; flex-direction: column; gap: 8px; }
+.tag-chips-row { display: flex; flex-wrap: wrap; gap: 6px; min-height: 28px; }
+.tag-chip-removable {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: var(--blue); color: #fff;
+  font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 99px;
+}
+.tag-chip-removable button {
+  background: none; border: none; cursor: pointer;
+  color: rgba(255,255,255,.7); font-size: 13px; line-height: 1;
+  padding: 0; display: flex; align-items: center;
+}
+.tag-chip-removable button:hover { color: #fff; }
+.tag-preset-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag-preset-btn {
+  height: 26px; padding: 0 12px; border-radius: 99px;
+  background: rgba(6,14,159,.06); color: var(--blue);
+  font-size: 11px; font-weight: 700; cursor: pointer;
+  border: 1.5px solid transparent; font-family: 'Noto Sans TC', sans-serif;
+}
+.tag-preset-btn:hover { background: rgba(6,14,159,.12); }
+.tag-preset-btn.selected { background: var(--blue); color: #fff; border-color: var(--blue); }
+.tag-new-input-row { display: flex; gap: 6px; }
+#storyTagInput {
+  flex: 1; height: 34px; border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 0 10px;
+  font-family: 'Noto Sans TC', sans-serif; font-size: 12px; color: var(--text);
+  background: var(--bg); outline: none;
+}
+#storyTagInput:focus { border-color: var(--blue); background: #fff; }
+.tag-add-inline-btn {
+  height: 34px; padding: 0 12px;
+  background: var(--blue); color: #fff;
+  border: none; border-radius: var(--radius);
+  font-size: 11px; font-weight: 700; cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+.tag-add-inline-btn:hover { background: var(--blue-dark); }
 </style>
 </head>
 <body>
@@ -793,6 +946,11 @@ mark { background: var(--yellow); color: var(--blue); border-radius: 2px; paddin
     <div class="sidebar-item" onclick="switchTab('ai')" data-tab="ai">
       <span class="material-symbols-outlined">smart_toy</span>
       AI 助手
+      <span class="sidebar-badge">NEW</span>
+    </div>
+    <div class="sidebar-item" onclick="switchTab('stories')" data-tab="stories" ondblclick="enterStoryManage()" title="雙擊解鎖管理模式">
+      <span class="material-symbols-outlined">auto_stories</span>
+      社群故事
       <span class="sidebar-badge">NEW</span>
     </div>
   </nav>
@@ -919,6 +1077,39 @@ mark { background: var(--yellow); color: var(--blue); border-radius: 2px; paddin
     </div>
   </div>
 
+  <!-- ── TAB: 社群故事 ── -->
+  <div id="tab-stories" class="tab-panel">
+    <div class="story-header">
+      <div class="story-header-label">社群素材</div>
+      <div class="story-header-title">社群故事收集</div>
+      <div class="story-header-sub" id="storyCountSub">記錄用戶在各大平台分享的優質心得，作為貼文靈感</div>
+    </div>
+    
+    <div class="story-unlock-bar" id="storyUnlockBar">
+      <span class="material-symbols-outlined">edit_square</span>✏️ 故事管理模式已解鎖
+    </div>
+
+    <div class="story-body-wrap">
+      <div class="story-toolbar">
+        <div class="story-search-wrap">
+          <span class="material-symbols-outlined">search</span>
+          <input type="text" id="storySearchInput" placeholder="搜尋內文或用戶暱稱…" autocomplete="off" oninput="handleStorySearch()">
+        </div>
+        <button class="story-add-btn" id="storyAddBtn" onclick="openAddStoryModal()">
+          <span class="material-symbols-outlined">add_circle</span>新增故事
+        </button>
+      </div>
+
+      <div class="story-filter-bar" id="storyFilterBar">
+        <!-- 標籤篩選由 JS 產生 -->
+      </div>
+
+      <div class="story-list" id="storyList">
+        <!-- 故事卡片由 JS 產生 -->
+      </div>
+    </div>
+  </div>
+
   <!-- ── TAB: 管理後台 ── -->
   <div id="tab-admin" class="tab-panel">
     <div class="admin-header">
@@ -1033,6 +1224,66 @@ mark { background: var(--yellow); color: var(--blue); border-radius: 2px; paddin
   </div>
 </div>
 
+<!-- ══ MODAL: 社群故事新增/編輯 ══ -->
+<div id="storyModal" class="modal-overlay" onclick="if(event.target===this)closeStoryModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title" id="storyModalTitle">新增故事</div>
+      <button class="modal-close" onclick="closeStoryModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;gap:12px">
+        <div class="form-field" style="width:120px">
+          <label>來源平台</label>
+          <select id="storyModalPlatform">
+            <option value="IG">IG</option>
+            <option value="FB">FB</option>
+            <option value="Google">Google 地圖</option>
+            <option value="其他">其他</option>
+          </select>
+        </div>
+        <div class="form-field" style="flex:1">
+          <label>用戶暱稱 (選填)</label>
+          <input type="text" id="storyModalUsername" placeholder="例如：@ecoco_fan" maxlength="30">
+        </div>
+      </div>
+      
+      <div class="form-field">
+        <label>故事內文</label>
+        <textarea id="storyModalBody" rows="5" placeholder="貼上用戶的心得分享內文…"></textarea>
+      </div>
+
+      <div class="form-field">
+        <label>標籤 (自訂)</label>
+        <div class="tag-input-wrap">
+          <div class="tag-chips-row" id="storyModalTagChips">
+            <!-- 已選擇的標籤 -->
+          </div>
+          <div class="tag-new-input-row">
+            <input type="text" id="storyTagInput" placeholder="輸入新標籤後按 Enter 或新增" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();addStoryTagFromInput();}">
+            <button class="tag-add-inline-btn" onclick="addStoryTagFromInput()">新增</button>
+          </div>
+          <div class="form-hint">快速選擇常用標籤：</div>
+          <div class="tag-preset-row" id="storyModalPresetTags">
+            <!-- 常用標籤由 JS 產生 -->
+          </div>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label>日期</label>
+        <input type="date" id="storyModalDate">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-cancel" onclick="closeStoryModal()">取消</button>
+      <button class="btn-save" onclick="saveStory()">
+        <span class="material-symbols-outlined">save</span>儲存
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ CONFIRM ══ -->
 <div id="confirmOverlay" class="modal-overlay" onclick="if(event.target===this)closeConfirm()">
   <div class="modal" style="max-width:380px">
@@ -1136,7 +1387,7 @@ function switchTab(tabId) {
     b.classList.toggle('active', b.dataset.tab === tabId);
   });
 
-  const titles = { replies:'回覆範本', status:'機台狀態', ai:'AI 助手', admin:'管理後台' };
+  const titles = { replies:'回覆範本', status:'機台狀態', ai:'AI 助手', admin:'管理後台', stories:'社群故事' };
   document.getElementById('topbarTitle').textContent = titles[tabId] || '';
 
   const countEl = document.getElementById('topbarCount');
@@ -1148,6 +1399,10 @@ function switchTab(tabId) {
     renderAnnAdminList();
     const input = document.getElementById('lookerUrlInput');
     if (input) input.value = localStorage.getItem('lookerUrl') || DEFAULT_LOOKER_URL;
+  }
+  
+  if (tabId === 'stories') {
+    loadStories();
   }
 }
 
@@ -1756,6 +2011,300 @@ async function syncReorder(catId) {
     await fetch(SHEETS_API, { method:'POST', body: JSON.stringify({action:'reorder', category_id:catId, replies:cat.replies}) });
     showToast('✅ 順序已同步');
   } catch(e) { showToast('⚠️ 本地已更新，但 Sheets 同步失敗', true); }
+}
+
+// ══════════════════════════════════════
+// STORY COLLECTOR
+// ══════════════════════════════════════
+let STORIES = [];
+let storiesLoaded = false;
+let storyUnlocked = false;
+let activeStoryTag = '全部';
+let storySearch = '';
+const DEFAULT_STORY_TAGS = ['功能建議', '使用分享', '小朋友故事'];
+
+async function loadStories() {
+  if (storiesLoaded) return;
+  const list = document.getElementById('storyList');
+  list.innerHTML = '<div class="loading-wrap"><div class="spinner"></div><div class="empty-text">載入故事中…</div></div>';
+  try {
+    const res = await fetchData(SHEETS_API + '?action=get_stories');
+    STORIES = res.stories || [];
+    storiesLoaded = true;
+    renderStories();
+  } catch(e) {
+    list.innerHTML = `
+      <div class="loading-wrap">
+        <span class="material-symbols-outlined empty-icon">wifi_off</span>
+        <div style="font-size:14px;font-weight:700;color:var(--blue)">無法載入故事</div>
+        <div class="empty-text">可能後端尚未支援或網路錯誤</div>
+      </div>`;
+  }
+}
+
+function renderStories() {
+  const list = document.getElementById('storyList');
+  let filtered = STORIES;
+  
+  if (activeStoryTag !== '全部') {
+    filtered = filtered.filter(s => s.tags && s.tags.includes(activeStoryTag));
+  }
+  if (storySearch) {
+    const q = storySearch.toLowerCase();
+    filtered = filtered.filter(s => 
+      s.body.toLowerCase().includes(q) || 
+      (s.username && s.username.toLowerCase().includes(q))
+    );
+  }
+
+  document.getElementById('storyCountSub').textContent = \`共 \${STORIES.length} 則社群心得\`;
+  buildStoryFilterChips();
+
+  if (!filtered.length) {
+    list.innerHTML = \`<div class="empty-text" style="text-align:center;padding:40px 0">找不到符合的故事</div>\`;
+    return;
+  }
+
+  list.innerHTML = filtered.map((s, i) => storyCardHTML(s, i)).join('');
+}
+
+function storyCardHTML(s, i) {
+  const delay = ['d1','d2','d3','d4','d5','d6','d7','d8'][i % 8] || '';
+  const platLower = (s.platform || '其他').toLowerCase();
+  let platClass = 'other';
+  if (platLower.includes('ig')) platClass = 'ig';
+  else if (platLower.includes('fb')) platClass = 'fb';
+  else if (platLower.includes('google')) platClass = 'google';
+  
+  const tagsHtml = (s.tags || []).map(t => \`<span class="story-tag-chip">\${esc(t)}</span>\`).join('');
+  const manageHtml = \`
+    <div class="story-manage-actions \${storyUnlocked ? 'visible' : ''}">
+      <button class="edit-btn" onclick="openEditStoryModal('\${esc(s.id)}')">
+        <span class="material-symbols-outlined">edit</span>編輯
+      </button>
+      <button class="del-btn" onclick="confirmDeleteStory('\${esc(s.id)}')">
+        <span class="material-symbols-outlined">delete</span>刪除
+      </button>
+    </div>\`;
+
+  return \`
+  <div class="story-card fade-up \${delay}" data-story-id="\${esc(s.id)}">
+    <div class="story-card-top">
+      <span class="story-platform-badge \${platClass}">\${esc(s.platform || '其他')}</span>
+      \${s.username ? \`<span class="story-username">\${hl(s.username, storySearch)}</span>\` : ''}
+      <div style="flex:1"></div>
+      <div class="story-tags">\${tagsHtml}</div>
+    </div>
+    
+    <div class="story-body clamped" id="body-\${esc(s.id)}">\${hl(s.body, storySearch)}</div>
+    <button class="story-expand-btn" onclick="toggleStoryExpand('\${esc(s.id)}', this)">展開 ▾</button>
+
+    <div class="story-card-footer">
+      <div class="story-meta">
+        <span class="material-symbols-outlined" style="font-size:12px">calendar_today</span>
+        \${esc(s.date || '')}
+      </div>
+      <div class="story-card-actions">
+        \${manageHtml}
+        <button class="story-copy-btn" data-body="\${esc(s.body)}" onclick="copyStoryBody(this)">
+          <span class="material-symbols-outlined">content_copy</span>複製內文
+        </button>
+      </div>
+    </div>
+  </div>\`;
+}
+
+function toggleStoryExpand(id, btn) {
+  const el = document.getElementById('body-' + id);
+  if (!el) return;
+  if (el.classList.contains('clamped')) {
+    el.classList.remove('clamped');
+    btn.textContent = '收合 ▴';
+  } else {
+    el.classList.add('clamped');
+    btn.textContent = '展開 ▾';
+  }
+}
+
+function copyStoryBody(btn) {
+  const text = btn.dataset.body || btn.getAttribute('data-body') || '';
+  const done = () => {
+    btn.classList.add('copied');
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings:\\'FILL\\' 1">check_circle</span>已複製！';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<span class="material-symbols-outlined">content_copy</span>複製內文';
+    }, 2000);
+  };
+  navigator.clipboard ? navigator.clipboard.writeText(text).then(done).catch(done)
+    : (() => { const ta = Object.assign(document.createElement('textarea'), {value:text,style:'position:fixed;opacity:0'}); document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done(); })();
+}
+
+function buildStoryFilterChips() {
+  const bar = document.getElementById('storyFilterBar');
+  const allTags = new Set();
+  STORIES.forEach(s => (s.tags || []).forEach(t => allTags.add(t)));
+  const sorted = Array.from(allTags).sort();
+  
+  let html = \`<button class="story-filter-chip \${activeStoryTag === '全部' ? 'active' : ''}" onclick="filterStoryByTag('全部')">全部</button>\`;
+  sorted.forEach(t => {
+    html += \`<button class="story-filter-chip \${activeStoryTag === t ? 'active' : ''}" onclick="filterStoryByTag('\${esc(t)}')">\${esc(t)}</button>\`;
+  });
+  bar.innerHTML = html;
+}
+
+function filterStoryByTag(tag) {
+  activeStoryTag = tag;
+  renderStories();
+}
+
+function handleStorySearch() {
+  storySearch = document.getElementById('storySearchInput').value.trim();
+  renderStories();
+}
+
+function enterStoryManage() {
+  if (activeTab !== 'stories') return;
+  if (!storyUnlocked) {
+    storyUnlocked = true;
+    document.getElementById('storyUnlockBar').classList.add('visible');
+    document.getElementById('storyAddBtn').classList.add('visible');
+    document.querySelectorAll('.story-manage-actions').forEach(el => el.classList.add('visible'));
+    showToast('✏️ 故事管理模式已解鎖');
+  }
+}
+
+// ── CRUD Modal ──
+let editStoryId = null;
+
+function openAddStoryModal() {
+  editStoryId = null;
+  document.getElementById('storyModalTitle').textContent = '新增故事';
+  document.getElementById('storyModalPlatform').value = 'IG';
+  document.getElementById('storyModalUsername').value = '';
+  document.getElementById('storyModalBody').value = '';
+  document.getElementById('storyTagInput').value = '';
+  document.getElementById('storyModalDate').value = new Date().toISOString().slice(0,10);
+  renderModalTags([]);
+  document.getElementById('storyModal').classList.add('open');
+}
+
+function openEditStoryModal(id) {
+  const s = STORIES.find(x => x.id === id);
+  if (!s) return;
+  editStoryId = id;
+  document.getElementById('storyModalTitle').textContent = '編輯故事';
+  document.getElementById('storyModalPlatform').value = s.platform || 'IG';
+  document.getElementById('storyModalUsername').value = s.username || '';
+  document.getElementById('storyModalBody').value = s.body || '';
+  document.getElementById('storyTagInput').value = '';
+  document.getElementById('storyModalDate').value = s.date ? s.date.replace(/\\//g, '-') : '';
+  renderModalTags(s.tags || []);
+  document.getElementById('storyModal').classList.add('open');
+}
+
+function closeStoryModal() { document.getElementById('storyModal').classList.remove('open'); }
+
+let currentModalTags = [];
+
+function renderModalTags(tags) {
+  currentModalTags = [...tags];
+  const row = document.getElementById('storyModalTagChips');
+  row.innerHTML = currentModalTags.map(t => \`
+    <div class="tag-chip-removable">
+      \${esc(t)} <button onclick="removeStoryTag('\${esc(t)}')">×</button>
+    </div>
+  \`).join('');
+
+  const presetRow = document.getElementById('storyModalPresetTags');
+  presetRow.innerHTML = DEFAULT_STORY_TAGS.map(t => {
+    const isSel = currentModalTags.includes(t);
+    return \`<button class="tag-preset-btn \${isSel ? 'selected' : ''}" onclick="togglePresetTag('\${esc(t)}')">\${esc(t)}</button>\`;
+  }).join('');
+}
+
+function addStoryTagFromInput() {
+  const input = document.getElementById('storyTagInput');
+  const val = input.value.trim();
+  if (val && !currentModalTags.includes(val)) {
+    currentModalTags.push(val);
+    renderModalTags(currentModalTags);
+  }
+  input.value = '';
+}
+
+function removeStoryTag(tag) {
+  currentModalTags = currentModalTags.filter(t => t !== tag);
+  renderModalTags(currentModalTags);
+}
+
+function togglePresetTag(tag) {
+  if (currentModalTags.includes(tag)) {
+    currentModalTags = currentModalTags.filter(t => t !== tag);
+  } else {
+    currentModalTags.push(tag);
+  }
+  renderModalTags(currentModalTags);
+}
+
+async function saveStory() {
+  const platform = document.getElementById('storyModalPlatform').value;
+  const username = document.getElementById('storyModalUsername').value.trim();
+  const body = document.getElementById('storyModalBody').value.trim();
+  const dateInput = document.getElementById('storyModalDate').value;
+
+  if (!body) { showToast('請填寫故事內文', true); return; }
+
+  const dateDisplay = dateInput ? dateInput.replace(/-/g, '/') : '';
+  let storyObj;
+
+  if (editStoryId) {
+    const idx = STORIES.findIndex(x => x.id === editStoryId);
+    if (idx !== -1) {
+      storyObj = { ...STORIES[idx], platform, username, body, tags: currentModalTags, date: dateDisplay };
+      STORIES[idx] = storyObj;
+    }
+  } else {
+    storyObj = {
+      id: 'story-' + Date.now().toString().slice(-6),
+      platform, username, body, tags: currentModalTags, date: dateDisplay
+    };
+    STORIES.unshift(storyObj);
+  }
+
+  closeStoryModal();
+  renderStories();
+  showToast('儲存中…');
+
+  try {
+    await fetch(SHEETS_API, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'upsert_story', story: storyObj })
+    });
+    showToast(editStoryId ? '✅ 故事已更新' : '✅ 故事已新增');
+  } catch(e) {
+    showToast('⚠️ 本地已更新，但 Sheets 同步失敗', true);
+  }
+}
+
+let pendingDelStoryId = null;
+function confirmDeleteStory(id) {
+  pendingDelStoryId = id;
+  document.getElementById('confirmDesc').textContent = '確定要刪除這則故事嗎？此操作無法復原。';
+  document.getElementById('confirmOverlay').classList.add('open');
+  document.getElementById('confirmOkBtn').onclick = async () => {
+    STORIES = STORIES.filter(x => x.id !== pendingDelStoryId);
+    document.getElementById('confirmOverlay').classList.remove('open');
+    renderStories();
+    showToast('刪除中…');
+    try {
+      await fetch(SHEETS_API, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'delete_story', story: { id: pendingDelStoryId } })
+      });
+      showToast('🗑️ 故事已刪除');
+    } catch(e) { showToast('⚠️ 本地已刪除，但 Sheets 同步失敗', true); }
+  };
 }
 
 // ══════════════════════════════════════
