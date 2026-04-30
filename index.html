@@ -1849,12 +1849,14 @@ async function saveAnn() {
   showToast('儲存中…');
 
   try {
-    await fetch(SHEETS_API, {
+    const res = await fetch(SHEETS_API, {
       method: 'POST',
       body: JSON.stringify({ action: 'upsert_announcement', reply: annObj })
     });
+    const data = await res.json();
+    if (data && data.error) throw new Error(data.error);
     showToast(editAnnIdx !== null ? '✅ 公告已更新並儲存' : '✅ 公告已新增並儲存');
-  } catch(e) { showToast('⚠️ 本地已更新，但 Sheets 同步失敗', true); }
+  } catch(e) { showToast('⚠️ 儲存失敗：' + e.message, true); }
 }
 
 function confirmDeleteAnn(idx) {
@@ -1868,12 +1870,14 @@ function confirmDeleteAnn(idx) {
     renderAnnAdminList();
     showToast('刪除中…');
     try {
-      await fetch(SHEETS_API, {
+      const res = await fetch(SHEETS_API, {
         method: 'POST',
         body: JSON.stringify({ action: 'delete_announcement', reply: { id: deleted.id } })
       });
+      const data = await res.json();
+      if (data && data.error) throw new Error(data.error);
       showToast('🗑️ 公告已刪除並同步');
-    } catch(e) { showToast('⚠️ 本地已刪除，但 Sheets 同步失敗', true); }
+    } catch(e) { showToast('⚠️ 刪除失敗：' + e.message, true); }
   };
 }
 
@@ -1980,9 +1984,11 @@ async function saveReply() {
   renderAdminList(); showToast('儲存中…');
 
   try {
-    await fetch(SHEETS_API, { method:'POST', body: JSON.stringify({action:'upsert', category_id:catId, reply:replyObj}) });
+    const res = await fetch(SHEETS_API, { method:'POST', body: JSON.stringify({action:'upsert', category_id:catId, reply:replyObj}) });
+    const data = await res.json();
+    if (data && data.error) throw new Error(data.error);
     showToast(editIdx !== null ? '✅ 回覆已更新並儲存' : '✅ 回覆已新增並儲存');
-  } catch(e) { showToast('⚠️ 本地已更新，但 Sheets 同步失敗', true); }
+  } catch(e) { showToast('⚠️ 儲存失敗：' + e.message, true); }
 }
 
 // Delete
@@ -1998,9 +2004,11 @@ function confirmDelete(catId, idx) {
     document.getElementById('confirmOverlay').classList.remove('open');
     renderAdminList(); showToast('刪除中…');
     try {
-      await fetch(SHEETS_API, { method:'POST', body: JSON.stringify({action:'delete', category_id:pendingDelCat, reply:{id:deleted.id}}) });
+      const res = await fetch(SHEETS_API, { method:'POST', body: JSON.stringify({action:'delete', category_id:pendingDelCat, reply:{id:deleted.id}}) });
+      const data = await res.json();
+      if (data && data.error) throw new Error(data.error);
       showToast('🗑️ 回覆已刪除並同步');
-    } catch(e) { showToast('⚠️ 本地已刪除，但 Sheets 同步失敗', true); }
+    } catch(e) { showToast('⚠️ 刪除失敗：' + e.message, true); }
   };
 }
 function closeConfirm() { document.getElementById('confirmOverlay').classList.remove('open'); }
@@ -2008,9 +2016,11 @@ function closeConfirm() { document.getElementById('confirmOverlay').classList.re
 async function syncReorder(catId) {
   const cat = CATEGORIES.find(c => c.id === catId);
   try {
-    await fetch(SHEETS_API, { method:'POST', body: JSON.stringify({action:'reorder', category_id:catId, replies:cat.replies}) });
+    const res = await fetch(SHEETS_API, { method:'POST', body: JSON.stringify({action:'reorder', category_id:catId, replies:cat.replies}) });
+    const data = await res.json();
+    if (data && data.error) throw new Error(data.error);
     showToast('✅ 順序已同步');
-  } catch(e) { showToast('⚠️ 本地已更新，但 Sheets 同步失敗', true); }
+  } catch(e) { showToast('⚠️ 同步失敗：' + e.message, true); }
 }
 
 // ══════════════════════════════════════
@@ -2277,13 +2287,15 @@ async function saveStory() {
   showToast('儲存中…');
 
   try {
-    await fetch(SHEETS_API, {
+    const res = await fetch(SHEETS_API, {
       method: 'POST',
       body: JSON.stringify({ action: 'upsert_story', story: storyObj })
     });
+    const data = await res.json();
+    if (data && data.error) throw new Error(data.error);
     showToast(editStoryId ? '✅ 故事已更新' : '✅ 故事已新增');
   } catch(e) {
-    showToast('⚠️ 本地已更新，但 Sheets 同步失敗', true);
+    showToast('⚠️ 儲存失敗：' + e.message, true);
   }
 }
 
@@ -2298,12 +2310,14 @@ function confirmDeleteStory(id) {
     renderStories();
     showToast('刪除中…');
     try {
-      await fetch(SHEETS_API, {
+      const res = await fetch(SHEETS_API, {
         method: 'POST',
         body: JSON.stringify({ action: 'delete_story', story: { id: pendingDelStoryId } })
       });
+      const data = await res.json();
+      if (data && data.error) throw new Error(data.error);
       showToast('🗑️ 故事已刪除');
-    } catch(e) { showToast('⚠️ 本地已刪除，但 Sheets 同步失敗', true); }
+    } catch(e) { showToast('⚠️ 刪除失敗：' + e.message, true); }
   };
 }
 
