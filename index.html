@@ -2057,11 +2057,11 @@ function renderStories() {
     );
   }
 
-  document.getElementById('storyCountSub').textContent = \`共 \${STORIES.length} 則社群心得\`;
+  document.getElementById('storyCountSub').textContent = `共 ${STORIES.length} 則社群心得`;
   buildStoryFilterChips();
 
   if (!filtered.length) {
-    list.innerHTML = \`<div class="empty-text" style="text-align:center;padding:40px 0">找不到符合的故事</div>\`;
+    list.innerHTML = `<div class="empty-text" style="text-align:center;padding:40px 0">找不到符合的故事</div>`;
     return;
   }
 
@@ -2076,42 +2076,42 @@ function storyCardHTML(s, i) {
   else if (platLower.includes('fb')) platClass = 'fb';
   else if (platLower.includes('google')) platClass = 'google';
   
-  const tagsHtml = (s.tags || []).map(t => \`<span class="story-tag-chip">\${esc(t)}</span>\`).join('');
-  const manageHtml = \`
-    <div class="story-manage-actions \${storyUnlocked ? 'visible' : ''}">
-      <button class="edit-btn" onclick="openEditStoryModal('\${esc(s.id)}')">
+  const tagsHtml = (s.tags || []).map(t => `<span class="story-tag-chip">${esc(t)}</span>`).join('');
+  const manageHtml = `
+    <div class="story-manage-actions ${storyUnlocked ? 'visible' : ''}">
+      <button class="edit-btn" onclick="openEditStoryModal('${esc(s.id)}')">
         <span class="material-symbols-outlined">edit</span>編輯
       </button>
-      <button class="del-btn" onclick="confirmDeleteStory('\${esc(s.id)}')">
+      <button class="del-btn" onclick="confirmDeleteStory('${esc(s.id)}')">
         <span class="material-symbols-outlined">delete</span>刪除
       </button>
-    </div>\`;
+    </div>`;
 
-  return \`
-  <div class="story-card fade-up \${delay}" data-story-id="\${esc(s.id)}">
+  return `
+  <div class="story-card fade-up ${delay}" data-story-id="${esc(s.id)}">
     <div class="story-card-top">
-      <span class="story-platform-badge \${platClass}">\${esc(s.platform || '其他')}</span>
-      \${s.username ? \`<span class="story-username">\${hl(s.username, storySearch)}</span>\` : ''}
+      <span class="story-platform-badge ${platClass}">${esc(s.platform || '其他')}</span>
+      ${s.username ? `<span class="story-username">${hl(s.username, storySearch)}</span>` : ''}
       <div style="flex:1"></div>
-      <div class="story-tags">\${tagsHtml}</div>
+      <div class="story-tags">${tagsHtml}</div>
     </div>
     
-    <div class="story-body clamped" id="body-\${esc(s.id)}">\${hl(s.body, storySearch)}</div>
-    <button class="story-expand-btn" onclick="toggleStoryExpand('\${esc(s.id)}', this)">展開 ▾</button>
+    <div class="story-body clamped" id="body-${esc(s.id)}">${hl(s.body, storySearch)}</div>
+    <button class="story-expand-btn" onclick="toggleStoryExpand('${esc(s.id)}', this)">展開 ▾</button>
 
     <div class="story-card-footer">
       <div class="story-meta">
         <span class="material-symbols-outlined" style="font-size:12px">calendar_today</span>
-        \${esc(s.date || '')}
+        ${esc(s.date || '')}
       </div>
       <div class="story-card-actions">
-        \${manageHtml}
-        <button class="story-copy-btn" data-body="\${esc(s.body)}" onclick="copyStoryBody(this)">
+        ${manageHtml}
+        <button class="story-copy-btn" data-body="${esc(s.body)}" onclick="copyStoryBody(this)">
           <span class="material-symbols-outlined">content_copy</span>複製內文
         </button>
       </div>
     </div>
-  </div>\`;
+  </div>`;
 }
 
 function toggleStoryExpand(id, btn) {
@@ -2130,7 +2130,7 @@ function copyStoryBody(btn) {
   const text = btn.dataset.body || btn.getAttribute('data-body') || '';
   const done = () => {
     btn.classList.add('copied');
-    btn.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings:\\'FILL\\' 1">check_circle</span>已複製！';
+    btn.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings:\'FILL\' 1">check_circle</span>已複製！';
     setTimeout(() => {
       btn.classList.remove('copied');
       btn.innerHTML = '<span class="material-symbols-outlined">content_copy</span>複製內文';
@@ -2146,9 +2146,9 @@ function buildStoryFilterChips() {
   STORIES.forEach(s => (s.tags || []).forEach(t => allTags.add(t)));
   const sorted = Array.from(allTags).sort();
   
-  let html = \`<button class="story-filter-chip \${activeStoryTag === '全部' ? 'active' : ''}" onclick="filterStoryByTag('全部')">全部</button>\`;
+  let html = `<button class="story-filter-chip ${activeStoryTag === '全部' ? 'active' : ''}" onclick="filterStoryByTag('全部')">全部</button>`;
   sorted.forEach(t => {
-    html += \`<button class="story-filter-chip \${activeStoryTag === t ? 'active' : ''}" onclick="filterStoryByTag('\${esc(t)}')">\${esc(t)}</button>\`;
+    html += `<button class="story-filter-chip ${activeStoryTag === t ? 'active' : ''}" onclick="filterStoryByTag('${esc(t)}')">${esc(t)}</button>`;
   });
   bar.innerHTML = html;
 }
@@ -2198,7 +2198,7 @@ function openEditStoryModal(id) {
   document.getElementById('storyModalUsername').value = s.username || '';
   document.getElementById('storyModalBody').value = s.body || '';
   document.getElementById('storyTagInput').value = '';
-  document.getElementById('storyModalDate').value = s.date ? s.date.replace(/\\//g, '-') : '';
+  document.getElementById('storyModalDate').value = s.date ? s.date.replace(/\//g, '-') : '';
   renderModalTags(s.tags || []);
   document.getElementById('storyModal').classList.add('open');
 }
@@ -2210,16 +2210,16 @@ let currentModalTags = [];
 function renderModalTags(tags) {
   currentModalTags = [...tags];
   const row = document.getElementById('storyModalTagChips');
-  row.innerHTML = currentModalTags.map(t => \`
+  row.innerHTML = currentModalTags.map(t => `
     <div class="tag-chip-removable">
-      \${esc(t)} <button onclick="removeStoryTag('\${esc(t)}')">×</button>
+      ${esc(t)} <button onclick="removeStoryTag('${esc(t)}')">×</button>
     </div>
-  \`).join('');
+  `).join('');
 
   const presetRow = document.getElementById('storyModalPresetTags');
   presetRow.innerHTML = DEFAULT_STORY_TAGS.map(t => {
     const isSel = currentModalTags.includes(t);
-    return \`<button class="tag-preset-btn \${isSel ? 'selected' : ''}" onclick="togglePresetTag('\${esc(t)}')">\${esc(t)}</button>\`;
+    return `<button class="tag-preset-btn ${isSel ? 'selected' : ''}" onclick="togglePresetTag('${esc(t)}')">${esc(t)}</button>`;
   }).join('');
 }
 
