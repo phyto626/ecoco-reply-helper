@@ -474,6 +474,10 @@ mark { background: var(--yellow); color: var(--blue); border-radius: 2px; paddin
 .search-group-body { display: none; padding: 0 12px 12px; }
 .search-group.open .search-group-body { display: block; }
 
+<<<<<<< HEAD
+=======
+mark { background: var(--yellow); color: var(--blue); border-radius: 2px; padding: 0 2px; }
+>>>>>>> origin/main
 
 /* ══ LOADING / EMPTY ══ */
 .loading-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; gap: 12px; }
@@ -1568,6 +1572,7 @@ function renderCategory(catId) {
 }
 
 // ══════════════════════════════════════
+<<<<<<< HEAD
 // REPLY CARD (Phase 1: 緊湊列表)
 // ══════════════════════════════════════
 
@@ -1578,10 +1583,15 @@ function previewText(body, maxLen = 35) {
   return [...s].slice(0, maxLen).join('') + '…';
 }
 
+=======
+// REPLY CARD
+// ══════════════════════════════════════
+>>>>>>> origin/main
 function replyCardHTML(r, q, i, showPin = true) {
   const delay = ['d1','d2','d3','d4','d5','d6','d7','d8'][i] || '';
   const isPinned = PINNED_IDS.has(r.id);
   const pinClass = isPinned ? 'pin-btn pinned' : 'pin-btn';
+<<<<<<< HEAD
   const cardClass = (isPinned ? 'reply-card is-pinned' : 'reply-card') + ' fade-up ' + delay;
   const pinBtn = showPin ? `
     <button class="${pinClass}" onclick="togglePin(event,'${esc(r.id)}')" title="${isPinned ? '取消釘選' : '釘選'}">
@@ -1610,15 +1620,35 @@ function replyCardHTML(r, q, i, showPin = true) {
     <!-- 展開區：完整內文 -->
     <div class="reply-expand-body">
       <div class="reply-card-body">${hl(r.body, q)}</div>
+=======
+  const pinLabel = isPinned ? '已釘選' : '釘選';
+  const cardClass = isPinned ? 'reply-card is-pinned fade-up ' + delay : 'reply-card fade-up ' + delay;
+  const pinBtn = showPin ? `
+    <button class="${pinClass}" onclick="togglePin(event,'${esc(r.id)}')">
+      <span class="material-symbols-outlined">push_pin</span>${pinLabel}
+    </button>` : '';
+  return `
+  <div class="${cardClass}" data-reply-id="${esc(r.id)}">
+    <span class="reply-card-tag">${esc(r.title)}</span>
+    <div class="reply-card-body">${hl(r.body, q)}</div>
+    <div class="reply-card-footer">
+      ${pinBtn}
+      <button class="copy-btn" data-body="${esc(r.body)}" onclick="copyReply(this)">
+        <span class="material-symbols-outlined">content_copy</span>複製此回覆
+      </button>
+>>>>>>> origin/main
     </div>
   </div>`;
 }
 
+<<<<<<< HEAD
 function toggleExpand(card) {
   if (!card) return;
   card.classList.toggle('expanded');
 }
 
+=======
+>>>>>>> origin/main
 function draftCopyReply(btn) {
   const text = btn.dataset.body || btn.getAttribute('data-body') || '';
   const done = () => {
@@ -1838,7 +1868,11 @@ function togglePin(e, replyId) {
     if (!btn) return;
     const isPinned = PINNED_IDS.has(replyId);
     btn.className = isPinned ? 'pin-btn pinned' : 'pin-btn';
+<<<<<<< HEAD
     btn.title = isPinned ? '取消釘選' : '釘選';
+=======
+    btn.querySelector('span:last-child') && (btn.querySelector('span:last-child').textContent = isPinned ? '已釘選' : '釘選');
+>>>>>>> origin/main
     card.classList.toggle('is-pinned', isPinned);
   });
   // 若在首頁，重新渲染釘選區
