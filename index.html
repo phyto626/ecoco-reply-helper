@@ -1591,11 +1591,19 @@ function enterAdmin() {
 // ══════════════════════════════════════
 let editModeUnlocked = true; // 預設開啟編輯模式
 
-// 初始化預設編輯模式 UI
-if (editModeUnlocked) {
-  document.body.classList.add('edit-mode');
-  const banner = document.getElementById('editModeBanner');
-  if (banner) banner.classList.add('visible');
+function applyDefaultEditMode() {
+  if (editModeUnlocked) {
+    document.body.classList.add('edit-mode');
+    const banner = document.getElementById('editModeBanner');
+    if (banner) banner.classList.add('visible');
+  }
+}
+
+// 穩健的初始化：如果 DOM 還在解析就等 ready，否則立刻執行
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', applyDefaultEditMode);
+} else {
+  applyDefaultEditMode();
 }
 
 function toggleEditMode() {
