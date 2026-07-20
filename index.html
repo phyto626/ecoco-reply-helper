@@ -1589,7 +1589,16 @@ function enterAdmin() {
 // ══════════════════════════════════════
 // PHASE 2: EDIT MODE TOGGLE
 // ══════════════════════════════════════
-let editModeUnlocked = false;
+let editModeUnlocked = true; // 預設開啟編輯模式
+
+// 初始化預設編輯模式 UI
+window.addEventListener('DOMContentLoaded', () => {
+  if (editModeUnlocked) {
+    document.body.classList.add('edit-mode');
+    const banner = document.getElementById('editModeBanner');
+    if (banner) banner.classList.add('visible');
+  }
+});
 
 function toggleEditMode() {
   editModeUnlocked = !editModeUnlocked;
