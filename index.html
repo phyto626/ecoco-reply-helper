@@ -773,6 +773,99 @@ mark { background: var(--yellow); color: var(--blue); border-radius: 2px; paddin
 }
 #toast.error { background: #b91c1c; }
 
+/* ══ EDIT MODE BANNER (Phase 2) ══ */
+#editModeBanner {
+  background: var(--orange);
+  color: #fff;
+  padding: 7px 28px;
+  font-size: 11px; font-weight: 700;
+  display: none; align-items: center; gap: 8px;
+  letter-spacing: .02em;
+  position: sticky; top: var(--topbar-h); z-index: 39;
+  box-shadow: 0 2px 8px rgba(255,80,0,.2);
+}
+#editModeBanner.visible { display: flex; }
+#editModeBanner .material-symbols-outlined { font-size: 15px; }
+#editModeBannerClose {
+  margin-left: auto;
+  background: rgba(255,255,255,.2);
+  border: none; border-radius: 6px;
+  color: #fff; font-size: 11px; font-weight: 700;
+  padding: 3px 10px; cursor: pointer;
+  font-family: 'Noto Sans TC', sans-serif;
+}
+#editModeBannerClose:hover { background: rgba(255,255,255,.3); }
+
+/* 編輯圖示按鈕（卡片右側，editMode 才顯示）*/
+.card-edit-btn {
+  display: none; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer;
+  color: var(--text-light); border-radius: 6px;
+  padding: 7px; min-width: 36px; min-height: 36px;
+}
+.card-edit-btn .material-symbols-outlined { font-size: 16px; }
+.card-edit-btn:hover { background: rgba(255,80,0,.08); color: var(--orange); }
+body.edit-mode .card-edit-btn { display: flex; }
+
+/* ── Inline Edit 區塊 ── */
+.reply-inline-edit {
+  display: none;
+  padding: 12px 14px 14px;
+  border-top: 1px solid var(--border);
+  flex-direction: column; gap: 10px;
+  background: rgba(255,80,0,.025);
+}
+.reply-card.editing .reply-inline-edit { display: flex; }
+.reply-card.editing .reply-expand-body { display: none !important; }
+
+/* 編輯時主列變成淡背景 */
+.reply-card.editing { border-color: var(--orange) !important; box-shadow: 0 0 0 2px rgba(255,80,0,.12); }
+.reply-card.editing .reply-row { background: rgba(255,80,0,.03); cursor: default; }
+
+.inline-edit-label {
+  font-size: 9px; font-weight: 700; color: var(--text-mute);
+  letter-spacing: .08em; text-transform: uppercase; margin-bottom: 2px;
+}
+.inline-edit-title-input {
+  width: 100%; height: 36px;
+  background: #fff; border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 0 10px;
+  font-family: 'Noto Sans TC', sans-serif; font-size: 13px; color: var(--text);
+  outline: none;
+}
+.inline-edit-title-input:focus { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(255,80,0,.08); }
+.inline-edit-body-textarea {
+  width: 100%; min-height: 120px;
+  background: #fff; border: 1.5px solid var(--border);
+  border-radius: var(--radius); padding: 10px 12px;
+  font-family: 'Noto Sans TC', sans-serif; font-size: 13px; color: var(--text);
+  outline: none; resize: vertical; line-height: 1.7;
+}
+.inline-edit-body-textarea:focus { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(255,80,0,.08); }
+.inline-edit-actions {
+  display: flex; gap: 8px; justify-content: flex-end; align-items: center;
+}
+.inline-edit-hint {
+  font-size: 10px; color: var(--text-light); margin-right: auto;
+}
+.btn-inline-cancel {
+  padding: 6px 14px; border-radius: 7px;
+  background: none; border: 1.5px solid var(--border);
+  color: var(--text-mute); font-size: 11px; font-weight: 600;
+  cursor: pointer; font-family: 'Noto Sans TC', sans-serif;
+}
+.btn-inline-cancel:hover { background: var(--bg); }
+.btn-inline-save {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 14px; border-radius: 7px;
+  background: var(--orange); color: #fff;
+  border: none; font-size: 11px; font-weight: 700;
+  cursor: pointer; font-family: 'Noto Sans TC', sans-serif;
+}
+.btn-inline-save .material-symbols-outlined { font-size: 13px; }
+.btn-inline-save:hover { background: var(--orange-lt); }
+.btn-inline-save:disabled { opacity: .6; cursor: not-allowed; }
+
 /* ══ ANNOUNCEMENTS ══ */
 #announcements-wrap { padding: 20px 28px 0; }
 .ann-section-label {
@@ -1002,7 +1095,7 @@ mark { background: var(--yellow); color: var(--blue); border-radius: 2px; paddin
 
   <div class="sidebar-section-label">主要功能</div>
   <nav class="sidebar-nav">
-    <div class="sidebar-item active" onclick="switchTab('replies')" data-tab="replies">
+    <div class="sidebar-item active" onclick="switchTab('replies')" ondblclick="toggleEditMode()" data-tab="replies" title="雙擊解鎖編輯模式">
       <span class="material-symbols-outlined">chat_bubble</span>
       回覆範本
     </div>
@@ -1038,8 +1131,15 @@ mark { background: var(--yellow); color: var(--blue); border-radius: 2px; paddin
     <span class="topbar-title" id="topbarTitle">回覆範本</span>
     <span class="topbar-count" id="topbarCount"></span>
     <div class="topbar-right">
-      <span class="topbar-version">v1.1</span>
+      <span class="topbar-version">v1.2</span>
     </div>
+  </div>
+
+  <!-- ── EDIT MODE BANNER (Phase 2) ── -->
+  <div id="editModeBanner">
+    <span class="material-symbols-outlined">edit_square</span>
+    ✏️ 編輯模式已解鎖 — 所有卡片右側顯示編輯按鈕
+    <button id="editModeBannerClose" onclick="toggleEditMode()">關閉編輯模式 ✕</button>
   </div>
 
   <!-- ── TAB: 回覆範本 ── -->
@@ -1487,6 +1587,168 @@ function enterAdmin() {
 }
 
 // ══════════════════════════════════════
+// PHASE 2: EDIT MODE TOGGLE
+// ══════════════════════════════════════
+let editModeUnlocked = false;
+
+function toggleEditMode() {
+  editModeUnlocked = !editModeUnlocked;
+  document.body.classList.toggle('edit-mode', editModeUnlocked);
+  const banner = document.getElementById('editModeBanner');
+  if (editModeUnlocked) {
+    banner.classList.add('visible');
+    showToast('✏️ 編輯模式已解鎖');
+  } else {
+    banner.classList.remove('visible');
+    // 收合所有正在編輯的卡片
+    document.querySelectorAll('.reply-card.editing').forEach(card => cancelInlineEdit(card));
+    showToast('🔒 編輯模式已關閉');
+  }
+}
+
+// ══════════════════════════════════════
+// PHASE 2: findReplyById
+// ══════════════════════════════════════
+function findReplyById(id) {
+  for (const cat of CATEGORIES) {
+    const idx = cat.replies.findIndex(r => r.id === id);
+    if (idx !== -1) return { cat, idx, reply: cat.replies[idx] };
+  }
+  return null;
+}
+
+// ══════════════════════════════════════
+// PHASE 2: upsertReply (共用 POST 邏輯)
+// ══════════════════════════════════════
+async function upsertReply(catId, replyObj) {
+  const res = await fetch(SHEETS_API, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'upsert', category_id: catId, reply: replyObj })
+  });
+  const data = await res.json();
+  if (data && data.error) throw new Error(data.error);
+  return data;
+}
+
+// ══════════════════════════════════════
+// PHASE 2: INLINE EDIT
+// ══════════════════════════════════════
+function enterInlineEdit(e, card) {
+  e.stopPropagation();
+  if (!editModeUnlocked) return;
+  if (card.classList.contains('editing')) return; // 已在編輯中
+
+  // 1. 若尚未展開，先展開（讓 UI 視覺流暢）
+  if (!card.classList.contains('expanded')) {
+    card.classList.add('expanded');
+  }
+  // 2. 進入編輯態
+  card.classList.add('editing');
+
+  // 3. 讓 title input 取得焦點
+  const titleInput = card.querySelector('.inline-edit-title-input');
+  if (titleInput) {
+    titleInput.focus();
+    titleInput.select();
+  }
+}
+
+function cancelInlineEdit(card) {
+  if (!card) return;
+  const editBlock = card.querySelector('.reply-inline-edit');
+  if (!editBlock) return;
+
+  // 還原欄位值
+  const origTitle = editBlock.dataset.origTitle || '';
+  const origBody  = editBlock.dataset.origBody  || '';
+  const titleInput = card.querySelector('.inline-edit-title-input');
+  const bodyTA     = card.querySelector('.inline-edit-body-textarea');
+  if (titleInput) titleInput.value = origTitle;
+  if (bodyTA)     bodyTA.value     = origBody;
+
+  // 離開編輯態、收合展開
+  card.classList.remove('editing', 'expanded');
+}
+
+async function saveInlineEdit(card) {
+  if (!card) return;
+  const replyId = card.dataset.replyId;
+  const found = findReplyById(replyId);
+  if (!found) { showToast('⚠️ 找不到對應的回覆資料', true); return; }
+
+  const titleInput = card.querySelector('.inline-edit-title-input');
+  const bodyTA     = card.querySelector('.inline-edit-body-textarea');
+  const saveBtn    = card.querySelector('.btn-inline-save');
+  const newTitle = (titleInput?.value || '').trim();
+  const newBody  = (bodyTA?.value    || '').trim();
+
+  if (!newTitle) { showToast('請填寫情境標題', true); titleInput?.focus(); return; }
+  if (!newBody)  { showToast('請填寫回覆內文', true); bodyTA?.focus(); return; }
+
+  // 儲存中狀態
+  showToast('儲存中…');
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.innerHTML = '<span class="material-symbols-outlined" style="animation:rotateSpin .7s linear infinite;display:inline-block">autorenew</span>儲存中…'; }
+
+  const { cat, reply } = found;
+  const updatedReply = { ...reply, title: newTitle, body: newBody };
+
+  try {
+    await upsertReply(cat.id, updatedReply);
+
+    // 更新 CATEGORIES 記憶體資料
+    Object.assign(reply, { title: newTitle, body: newBody });
+
+    // 只更新 DOM，不重繪整頁
+    // 1. 更新 tag 文字（摺疊列）
+    card.querySelector('.reply-card-tag').textContent = newTitle;
+    // 2. 更新預覽文字
+    card.querySelector('.reply-preview').textContent = previewText(newBody);
+    // 3. 更新展開區完整內文
+    const bodyEl = card.querySelector('.reply-card-body');
+    if (bodyEl) bodyEl.textContent = newBody; // 暫用 textContent，保留 pre-wrap
+    // 4. 更新複製按鈕的 data-body
+    const copyBtn = card.querySelector('.copy-btn');
+    if (copyBtn) copyBtn.dataset.body = newBody;
+    // 5. 更新 inline-edit 區的 orig 暫存（讓下次取消能還原到最新儲存值）
+    const editBlock = card.querySelector('.reply-inline-edit');
+    if (editBlock) {
+      editBlock.dataset.origTitle = newTitle;
+      editBlock.dataset.origBody  = newBody;
+    }
+
+    showToast('✅ 回覆已更新並儲存');
+    card.classList.remove('editing');
+    // 保持展開狀態，讓使用者確認結果
+  } catch(e) {
+    showToast('⚠️ 儲存失敗：' + e.message, true);
+    // 保持編輯態，不清空使用者輸入
+    if (saveBtn) {
+      saveBtn.disabled = false;
+      saveBtn.innerHTML = '<span class="material-symbols-outlined">save</span>儲存';
+    }
+  }
+}
+
+// ══════════════════════════════════════
+// PHASE 2: 鍵盤快捷鍵（Ctrl+Enter 儲存 / Esc 取消）
+// ══════════════════════════════════════
+document.addEventListener('keydown', e => {
+  // 找到焦點所在的 .reply-card.editing
+  const editingCard = document.activeElement?.closest?.('.reply-card.editing');
+  if (!editingCard) return;
+
+  if (e.key === 'Enter' && e.ctrlKey) {
+    e.preventDefault();
+    saveInlineEdit(editingCard);
+  } else if (e.key === 'Escape') {
+    e.preventDefault();
+    cancelInlineEdit(editingCard);
+  }
+});
+
+
+
+// ══════════════════════════════════════
 // UTILS
 // ══════════════════════════════════════
 let currentCatId = null, searchQuery = '';
@@ -1603,17 +1865,45 @@ function replyCardHTML(r, q, i, showPin = true) {
         <button class="copy-btn" data-body="${esc(r.body)}" onclick="copyReply(this)">
           <span class="material-symbols-outlined">content_copy</span>複製
         </button>
+        <!-- Phase 2: 編輯按鈕（editMode 才顯示）-->
+        <button class="card-edit-btn" onclick="enterInlineEdit(event, this.closest('.reply-card'))" title="原地編輯">
+          <span class="material-symbols-outlined">edit</span>
+        </button>
         <button class="expand-btn" onclick="toggleExpand(this.closest('.reply-card'))" title="展開/收合">
           <span class="material-symbols-outlined">expand_more</span>
         </button>
       </div>
     </div>
-    <!-- 展開區：完整內文 -->
+    <!-- 展開區：完整內文（唯讀）-->
     <div class="reply-expand-body">
       <div class="reply-card-body">${hl(r.body, q)}</div>
     </div>
+    <!-- Phase 2: 原地編輯區塊 -->
+    <div class="reply-inline-edit"
+         data-orig-title="${esc(r.title)}"
+         data-orig-body="${esc(r.body)}">
+      <div>
+        <div class="inline-edit-label">情境標題</div>
+        <input class="inline-edit-title-input" type="text" maxlength="30"
+               value="${esc(r.title)}"
+               placeholder="情境標題（建議 15 字以內）">
+      </div>
+      <div>
+        <div class="inline-edit-label">回覆內文</div>
+        <textarea class="inline-edit-body-textarea" rows="5"
+                  placeholder="輸入完整回覆內文，換行直接按 Enter，可包含 emoji">${esc(r.body)}</textarea>
+      </div>
+      <div class="inline-edit-actions">
+        <span class="inline-edit-hint">Ctrl+Enter 儲存 · Esc 取消</span>
+        <button class="btn-inline-cancel" onclick="cancelInlineEdit(this.closest('.reply-card'))">取消</button>
+        <button class="btn-inline-save" onclick="saveInlineEdit(this.closest('.reply-card'))">
+          <span class="material-symbols-outlined">save</span>儲存
+        </button>
+      </div>
+    </div>
   </div>`;
 }
+
 
 function toggleExpand(card) {
   if (!card) return;
