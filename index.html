@@ -997,6 +997,64 @@ body.edit-mode .card-edit-btn { display: flex; }
 .story-platform-badge.fb { background: #1877F2; }
 .story-platform-badge.google { background: #EA4335; }
 .story-platform-badge.other { background: var(--text-light); }
+.story-platform-badge.threads { background: #000; color: #fff; }
+
+/* ══ REPLY FAB (Floating Action Button) ══ */
+#replyFab {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  z-index: 100;
+  width: 54px; height: 54px;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 24px rgba(6,14,159,.30);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Noto Sans TC', sans-serif;
+  transition: background .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+#replyFab.visible { display: flex; }
+#replyFab:hover {
+  background: var(--blue-dark);
+  transform: scale(1.08);
+  box-shadow: 0 10px 32px rgba(6,14,159,.38);
+}
+#replyFab:active { transform: scale(.96); }
+#replyFab .material-symbols-outlined { font-size: 26px; }
+
+/* Tooltip on FAB */
+#replyFab::after {
+  content: '新增回覆';
+  position: absolute;
+  right: 64px;
+  white-space: nowrap;
+  background: rgba(6,14,159,.88);
+  color: #fff;
+  font-size: 11px; font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(6px);
+  transition: opacity .18s ease, transform .18s ease;
+}
+#replyFab:hover::after { opacity: 1; transform: translateX(0); }
+
+/* 自訂來源名稱輸入框容器 */
+#storyOtherNameWrap {
+  display: none;
+  margin-top: 8px;
+}
+#storyOtherNameWrap.visible { display: block; }
+#storyOtherNameWrap label {
+  font-size: 10px; font-weight: 700; color: var(--text-mute);
+  letter-spacing: .08em; text-transform: uppercase; display: block; margin-bottom: 6px;
+}
 
 .story-username { font-size: 11px; color: var(--text-mute); font-weight: 500; }
 
@@ -1334,6 +1392,11 @@ body.edit-mode .card-edit-btn { display: flex; }
 
 </div><!-- /#main -->
 
+<!-- ══ REPLY FAB ══ -->
+<button id="replyFab" onclick="openAddModalFromFab()" title="新增回覆">
+  <span class="material-symbols-outlined">add</span>
+</button>
+
 <!-- ══ MODAL: 公告新增/編輯 ══ -->
 <div id="annModal" class="modal-overlay" onclick="if(event.target===this)closeAnnModal()">
   <div class="modal">
@@ -1402,12 +1465,22 @@ body.edit-mode .card-edit-btn { display: flex; }
       <div style="display:flex;gap:12px">
         <div class="form-field" style="width:120px">
           <label>來源平台</label>
-          <select id="storyModalPlatform">
+          <select id="storyModalPlatform" onchange="handlePlatformChange()">
             <option value="IG">IG</option>
             <option value="FB">FB</option>
             <option value="Google">Google 地圖</option>
+            <option value="Threads">Threads</option>
             <option value="其他">其他</option>
           </select>
+          <!-- 自訂來源名稱（選「其他」時顯示）-->
+          <div id="storyOtherNameWrap">
+            <label>自訂來源名稱</label>
+            <input type="text" id="storyModalOtherName"
+              list="otherNameDatalist"
+              placeholder="例如：Dcard、LINE 社群…"
+              autocomplete="off">
+            <datalist id="otherNameDatalist"></datalist>
+          </div>
         </div>
         <div class="form-field" style="flex:1">
           <label>用戶暱稱 (選填)</label>
@@ -1571,6 +1644,9 @@ function switchTab(tabId) {
   if (tabId === 'stories') {
     loadStories();
   }
+
+  // FAB 只在 replies 分頁且 editMode 開啟時顯示
+  updateFabVisibility();
 }
 
 // ══════════════════════════════════════
@@ -1591,12 +1667,20 @@ function enterAdmin() {
 // ══════════════════════════════════════
 let editModeUnlocked = true; // 預設開啟編輯模式
 
+function updateFabVisibility() {
+  const fab = document.getElementById('replyFab');
+  if (!fab) return;
+  const shouldShow = editModeUnlocked && activeTab === 'replies';
+  fab.classList.toggle('visible', shouldShow);
+}
+
 function applyDefaultEditMode() {
   if (editModeUnlocked) {
     document.body.classList.add('edit-mode');
     const banner = document.getElementById('editModeBanner');
     if (banner) banner.classList.add('visible');
   }
+  updateFabVisibility();
 }
 
 // 穩健的初始化：如果 DOM 還在解析就等 ready，否則立刻執行
@@ -1619,6 +1703,7 @@ function toggleEditMode() {
     document.querySelectorAll('.reply-card.editing').forEach(card => cancelInlineEdit(card));
     showToast('🔒 編輯模式已關閉');
   }
+  updateFabVisibility();
 }
 
 // ══════════════════════════════════════
@@ -2337,13 +2422,20 @@ function dragEnd() { document.querySelectorAll('.admin-item').forEach(el => { el
 
 // Modal
 let editCatId = null, editIdx = null;
-function openAddModal() {
+function openAddModal(preferCatId) {
   editCatId = null; editIdx = null;
   document.getElementById('modalTitle').textContent = '新增回覆';
-  buildCatOptions(document.getElementById('modalCat'), document.getElementById('adminCatSelect').value);
+  // 優先使用傳入的 catId，其次用管理後台選的，最後 fallback 第一個分類
+  const targetCatId = preferCatId || document.getElementById('adminCatSelect').value;
+  buildCatOptions(document.getElementById('modalCat'), targetCatId);
   document.getElementById('modalTitleInput').value = '';
   document.getElementById('modalBody').value = '';
   document.getElementById('replyModal').classList.add('open');
+}
+
+// FAB 點擊：帶入目前瀏覽分類作為預設
+function openAddModalFromFab() {
+  openAddModal(currentCatId || null);
 }
 function openEditModal(catId, idx) {
   editCatId = catId; editIdx = idx;
@@ -2483,6 +2575,7 @@ function storyCardHTML(s, i) {
   if (platLower.includes('ig')) platClass = 'ig';
   else if (platLower.includes('fb')) platClass = 'fb';
   else if (platLower.includes('google')) platClass = 'google';
+  else if (platLower.includes('threads')) platClass = 'threads';
   
   const tagsHtml = (s.tags || []).map(t => `<span class="story-tag-chip">${esc(t)}</span>`).join('');
   const manageHtml = `
@@ -2593,8 +2686,20 @@ function openAddStoryModal() {
   document.getElementById('storyModalBody').value = '';
   document.getElementById('storyTagInput').value = '';
   document.getElementById('storyModalDate').value = new Date().toISOString().slice(0,10);
+  // 重置自訂名稱輸入框
+  document.getElementById('storyModalOtherName').value = '';
+  document.getElementById('storyOtherNameWrap').classList.remove('visible');
   renderModalTags([]);
   document.getElementById('storyModal').classList.add('open');
+}
+
+// 固定平台清單（用於判斷是否為自訂名稱）
+const FIXED_PLATFORMS = ['ig', 'fb', 'google', 'threads'];
+
+function isCustomPlatform(platform) {
+  if (!platform) return false;
+  const p = platform.toLowerCase();
+  return !FIXED_PLATFORMS.some(fp => p.includes(fp));
 }
 
 function openEditStoryModal(id) {
@@ -2602,13 +2707,57 @@ function openEditStoryModal(id) {
   if (!s) return;
   editStoryId = id;
   document.getElementById('storyModalTitle').textContent = '編輯故事';
-  document.getElementById('storyModalPlatform').value = s.platform || 'IG';
   document.getElementById('storyModalUsername').value = s.username || '';
   document.getElementById('storyModalBody').value = s.body || '';
   document.getElementById('storyTagInput').value = '';
   document.getElementById('storyModalDate').value = s.date ? s.date.replace(/\//g, '-') : '';
   renderModalTags(s.tags || []);
+
+  // 判斷來源是否為自訂名稱
+  if (isCustomPlatform(s.platform)) {
+    // 自訂名稱：下拉顯示「其他」，輸入框回填原始文字
+    document.getElementById('storyModalPlatform').value = '其他';
+    document.getElementById('storyModalOtherName').value = s.platform;
+    buildOtherNameDatalist();
+    document.getElementById('storyOtherNameWrap').classList.add('visible');
+  } else {
+    // 固定選項：直接設定，隱藏輸入框
+    document.getElementById('storyModalPlatform').value = s.platform || 'IG';
+    document.getElementById('storyModalOtherName').value = '';
+    document.getElementById('storyOtherNameWrap').classList.remove('visible');
+  }
+
   document.getElementById('storyModal').classList.add('open');
+}
+
+// 平台下拉 onChange：顯示/隱藏自訂名稱輸入框
+function handlePlatformChange() {
+  const val = document.getElementById('storyModalPlatform').value;
+  const wrap = document.getElementById('storyOtherNameWrap');
+  if (val === '其他') {
+    buildOtherNameDatalist();
+    wrap.classList.add('visible');
+    document.getElementById('storyModalOtherName').focus();
+  } else {
+    wrap.classList.remove('visible');
+  }
+}
+
+// 建立「其他」自訂名稱的 datalist（去重 + 忽略大小寫/空白）
+function buildOtherNameDatalist() {
+  const seen = new Set();
+  const options = [];
+  STORIES.forEach(s => {
+    if (s.platform && isCustomPlatform(s.platform)) {
+      const normalized = s.platform.trim().toLowerCase();
+      if (!seen.has(normalized)) {
+        seen.add(normalized);
+        options.push(s.platform.trim()); // 保留原始大小寫顯示
+      }
+    }
+  });
+  const dl = document.getElementById('otherNameDatalist');
+  dl.innerHTML = options.map(o => `<option value="${esc(o)}"></option>`).join('');
 }
 
 function closeStoryModal() { document.getElementById('storyModal').classList.remove('open'); }
@@ -2656,15 +2805,28 @@ function togglePresetTag(tag) {
 }
 
 async function saveStory() {
-  const platform = document.getElementById('storyModalPlatform').value;
+  const platformSel = document.getElementById('storyModalPlatform').value;
   const username = document.getElementById('storyModalUsername').value.trim();
   const body = document.getElementById('storyModalBody').value.trim();
   const dateInput = document.getElementById('storyModalDate').value;
+
+  // 決定最終 platform 值
+  let platform = platformSel;
+  if (platformSel === '其他') {
+    const customName = document.getElementById('storyModalOtherName').value.trim();
+    if (!customName) {
+      showToast('請輸入來源名稱', true);
+      document.getElementById('storyModalOtherName').focus();
+      return;
+    }
+    platform = customName; // 直接存入使用者輸入的原始文字
+  }
 
   if (!body) { showToast('請填寫故事內文', true); return; }
 
   const dateDisplay = dateInput ? dateInput.replace(/-/g, '/') : '';
   let storyObj;
+
 
   if (editStoryId) {
     const idx = STORIES.findIndex(x => x.id === editStoryId);
